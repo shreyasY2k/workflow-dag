@@ -3,906 +3,868 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conductor Workflow DAG Viewer</title>
+    <title>Conductor Workflow Visualizer</title>
     <style>
-        :root {
-            --bg-primary: #0a0e1a;
-            --bg-secondary: #111827;
-            --accent-primary: #3b82f6;
-            --accent-secondary: #8b5cf6;
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --border: #1f2937;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
             overflow: hidden;
             height: 100vh;
         }
-        
-        #container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        
-        #controls {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            z-index: 100;
-            min-width: 280px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-        
-        #controls h2 {
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            color: var(--accent-primary);
-        }
-        
-        .control-group {
-            margin-bottom: 16px;
-        }
-        
-        .control-group label {
-            display: block;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-        
-        input[type="file"] {
-            display: none;
-        }
-        
-        .file-upload-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .file-upload-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-        }
-        
-        button {
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.03em;
-            transition: all 0.2s ease;
-            margin-bottom: 8px;
-        }
-        
-        button:hover {
-            background: var(--border);
-            border-color: var(--accent-primary);
-        }
-        
-        #stats {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            z-index: 100;
-            font-size: 11px;
-            line-height: 1.6;
-            min-width: 200px;
-        }
-        
-        #stats div {
+
+        #header {
+            background: #fff;
+            border-bottom: 1px solid #e1e8ed;
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        
-        #stats span:first-child {
-            color: var(--text-secondary);
-        }
-        
-        #stats span:last-child {
-            color: var(--text-primary);
+
+        #header h1 {
+            font-size: 18px;
             font-weight: 600;
+            color: #2c3e50;
         }
-        
-        #nodeInfo {
+
+        #controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-wrapper label {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .file-input-wrapper label:hover {
+            background: #2980b9;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: white;
+            color: #2c3e50;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+            position: relative;
+            background: #ffffff;
+            cursor: grab;
+        }
+
+        #canvas-container:active {
+            cursor: grabbing;
+        }
+
+        svg {
+            display: block;
+        }
+
+        .node {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .node-rect {
+            transition: all 0.2s;
+        }
+
+        .node:hover .node-rect {
+            filter: brightness(1.05);
+            stroke-width: 2.5;
+        }
+
+        .node.has-children .node-rect {
+            stroke-width: 2.5;
+        }
+
+        .node.collapsed .node-rect {
+            stroke-dasharray: 4,4;
+        }
+
+        .node-text {
+            pointer-events: none;
+            user-select: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .node-type {
+            pointer-events: none;
+            user-select: none;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .edge {
+            fill: none;
+            stroke: #cbd5e0;
+            stroke-width: 2;
+            transition: all 0.2s;
+        }
+
+        .collapse-indicator {
+            transition: all 0.2s;
+        }
+
+        .collapse-indicator circle {
+            fill: white;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .collapse-indicator text {
+            font-size: 14px;
+            font-weight: bold;
+            fill: currentColor;
+        }
+
+        #info-panel {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background: white;
             padding: 20px;
-            z-index: 100;
-            max-width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 320px;
             display: none;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid #e1e8ed;
         }
-        
-        #nodeInfo h3 {
-            font-size: 14px;
-            margin-bottom: 12px;
-            color: var(--accent-primary);
+
+        #info-panel.show {
+            display: block;
+            animation: slideIn 0.2s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        #info-panel h3 {
+            font-size: 15px;
             font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            word-break: break-word;
         }
-        
-        #nodeInfo .info-row {
+
+        .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 11px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 12px;
         }
-        
-        #nodeInfo .info-row span:first-child {
-            color: var(--text-secondary);
+
+        .info-row:last-child {
+            border-bottom: none;
         }
-        
-        #nodeInfo .info-row span:last-child {
-            color: var(--text-primary);
+
+        .info-label {
+            color: #6b7280;
             font-weight: 500;
         }
-        
-        .legend {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
+
+        .info-value {
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: right;
+            word-break: break-all;
+            max-width: 180px;
         }
-        
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-COMPLETED {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-FAILED {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-RUNNING {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-SCHEDULED {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-SKIPPED {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        #legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e1e8ed;
+        }
+
+        #legend h4 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .legend-item {
             display: flex;
             align-items: center;
             margin-bottom: 8px;
-            font-size: 11px;
+            font-size: 12px;
         }
-        
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
         .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
+            width: 24px;
+            height: 24px;
             margin-right: 10px;
+            border-radius: 4px;
+            border: 1px solid #e1e8ed;
+            flex-shrink: 0;
         }
-        
-        #loading {
+
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e1e8ed;
+            font-size: 12px;
+        }
+
+        #stats h4 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            gap: 20px;
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: #6b7280;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        #empty-state {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            z-index: 200;
+            color: #9ca3af;
         }
-        
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+
+        #empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+
+        #empty-state h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #6b7280;
         }
-        
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--accent-primary);
-            border-radius: 8px;
-            padding: 16px 20px;
-            z-index: 1000;
-            font-size: 12px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            pointer-events: none;
+
+        #empty-state p {
+            font-size: 14px;
         }
-        
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
+
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #6b7280;
         }
     </style>
 </head>
 <body>
-    <div id="loading">
-        <div class="spinner"></div>
-        <div>Initializing Renderer...</div>
-    </div>
-    
-    <div id="container"></div>
-    
-    <div id="controls">
-        <h2>Workflow Controls</h2>
-        <div class="control-group">
-            <label for="fileInput">Load Workflow JSON</label>
-            <input type="file" id="fileInput" accept=".json">
-            <label for="fileInput" class="file-upload-btn">Choose File</label>
-        </div>
-        <div class="control-group">
-            <button id="expandAll">Expand All</button>
-            <button id="collapseAll">Collapse All</button>
-            <button id="resetView">Reset Camera</button>
-        </div>
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color" style="background: #3b82f6;"></div>
-                <span>Simple Task</span>
+    <div id="header">
+        <h1>Conductor Workflow Visualizer</h1>
+        <div id="controls">
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".json">
+                <label for="fileInput">Load Workflow</label>
             </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: #8b5cf6;"></div>
-                <span>Sub-Workflow</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: #10b981;"></div>
-                <span>Fork/Join</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: #f59e0b;"></div>
-                <span>Decision</span>
-            </div>
+            <button onclick="expandAll()">Expand All</button>
+            <button onclick="collapseAll()">Collapse All</button>
+            <button onclick="resetView()">Reset View</button>
         </div>
     </div>
-    
-    <div id="stats">
-        <div><span>Nodes:</span> <span id="nodeCount">0</span></div>
-        <div><span>Edges:</span> <span id="edgeCount">0</span></div>
-        <div><span>Depth:</span> <span id="depthCount">0</span></div>
-        <div><span>FPS:</span> <span id="fps">0</span></div>
-    </div>
-    
-    <div id="nodeInfo"></div>
-    
-    <div id="toast" class="toast"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <div id="canvas-container">
+        <svg id="canvas"></svg>
+        
+        <div id="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <h2>No Workflow Loaded</h2>
+            <p>Upload a workflow JSON file to visualize</p>
+        </div>
+    </div>
+
+    <div id="info-panel">
+        <button class="close-btn" onclick="closeInfo()">×</button>
+        <div id="info-content"></div>
+    </div>
+
+    <div id="legend">
+        <h4>Task Types</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #3b82f6;"></div>
+            <span>Simple</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #8b5cf6;"></div>
+            <span>Sub-Workflow</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #10b981;"></div>
+            <span>Decision</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #f59e0b;"></div>
+            <span>HTTP</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ec4899;"></div>
+            <span>Human</span>
+        </div>
+    </div>
+
+    <div id="stats">
+        <h4>Statistics</h4>
+        <div class="stat-row">
+            <span class="stat-label">Total Tasks:</span>
+            <span class="stat-value" id="totalTasks">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Visible:</span>
+            <span class="stat-value" id="visibleTasks">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Max Depth:</span>
+            <span class="stat-value" id="maxDepth">0</span>
+        </div>
+    </div>
+
     <script>
-        // DAG Visualization Engine
-        class WorkflowDAG {
-            constructor(containerElement) {
-                this.container = containerElement;
-                this.nodes = [];
-                this.edges = [];
-                this.nodeMap = new Map();
-                this.collapsedNodes = new Set();
-                
-                this.initScene();
-                this.initCamera();
-                this.initRenderer();
-                this.initLights();
-                this.initControls();
-                this.initRaycaster();
-                
-                this.animate();
-                
-                window.addEventListener('resize', () => this.onWindowResize());
-            }
+        // Constants
+        const NODE_WIDTH = 200;
+        const NODE_HEIGHT = 70;
+        const HORIZONTAL_SPACING = 280;
+        const VERTICAL_SPACING = 120;
+        const PADDING = 100;
+
+        // State
+        let allNodes = [];
+        let allEdges = [];
+        let collapsedNodes = new Set();
+        let svg = document.getElementById('canvas');
+        let svgGroup;
+        
+        // Pan & Zoom
+        let viewBox = { x: 0, y: 0, width: 2000, height: 1000 };
+        let isPanning = false;
+        let startPoint = { x: 0, y: 0 };
+        let scale = 1;
+
+        // Initialize
+        function init() {
+            svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            svg.appendChild(svgGroup);
+            updateViewBox();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            const container = document.getElementById('canvas-container');
             
-            initScene() {
-                this.scene = new THREE.Scene();
-                this.scene.background = new THREE.Color(0x0a0e1a);
-                this.scene.fog = new THREE.Fog(0x0a0e1a, 50, 200);
-            }
-            
-            initCamera() {
-                this.camera = new THREE.PerspectiveCamera(
-                    60,
-                    window.innerWidth / window.innerHeight,
-                    0.1,
-                    1000
-                );
-                this.camera.position.set(0, 20, 50);
-                this.camera.lookAt(0, 0, 0);
-            }
-            
-            initRenderer() {
-                this.renderer = new THREE.WebGLRenderer({ antialias: true });
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                this.container.appendChild(this.renderer.domElement);
+            container.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.node')) return;
+                isPanning = true;
+                startPoint = { x: e.clientX, y: e.clientY };
+                e.preventDefault();
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isPanning) return;
+                const dx = (e.clientX - startPoint.x) / scale;
+                const dy = (e.clientY - startPoint.y) / scale;
+                viewBox.x -= dx;
+                viewBox.y -= dy;
+                updateViewBox();
+                startPoint = { x: e.clientX, y: e.clientY };
+            });
+
+            container.addEventListener('mouseup', () => {
+                isPanning = false;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                isPanning = false;
+            });
+
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = scale * delta;
+                if (newScale < 0.1 || newScale > 3) return;
                 
-                document.getElementById('loading').style.display = 'none';
-            }
-            
-            initLights() {
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-                this.scene.add(ambientLight);
-                
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                directionalLight.position.set(10, 20, 10);
-                this.scene.add(directionalLight);
-                
-                const pointLight = new THREE.PointLight(0x3b82f6, 0.5, 100);
-                pointLight.position.set(0, 10, 20);
-                this.scene.add(pointLight);
-            }
-            
-            initControls() {
-                this.isDragging = false;
-                this.previousMousePosition = { x: 0, y: 0 };
-                
-                this.renderer.domElement.addEventListener('mousedown', (e) => {
-                    this.isDragging = true;
-                    this.previousMousePosition = { x: e.clientX, y: e.clientY };
-                });
-                
-                this.renderer.domElement.addEventListener('mousemove', (e) => {
-                    if (this.isDragging) {
-                        const deltaX = e.clientX - this.previousMousePosition.x;
-                        const deltaY = e.clientY - this.previousMousePosition.y;
-                        
-                        this.camera.position.x -= deltaX * 0.05;
-                        this.camera.position.y += deltaY * 0.05;
-                        this.camera.lookAt(0, 0, 0);
-                        
-                        this.previousMousePosition = { x: e.clientX, y: e.clientY };
-                    }
-                });
-                
-                this.renderer.domElement.addEventListener('mouseup', () => {
-                    this.isDragging = false;
-                });
-                
-                this.renderer.domElement.addEventListener('wheel', (e) => {
-                    e.preventDefault();
-                    const delta = e.deltaY * 0.05;
-                    this.camera.position.z += delta;
-                    this.camera.position.z = Math.max(10, Math.min(150, this.camera.position.z));
-                });
-            }
-            
-            initRaycaster() {
-                this.raycaster = new THREE.Raycaster();
-                this.mouse = new THREE.Vector2();
-                
-                this.renderer.domElement.addEventListener('click', (e) => {
-                    if (this.isDragging) return;
-                    
-                    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-                    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-                    
-                    this.raycaster.setFromCamera(this.mouse, this.camera);
-                    const intersects = this.raycaster.intersectObjects(this.scene.children, true);
-                    
-                    if (intersects.length > 0) {
-                        const object = intersects[0].object;
-                        if (object.userData.nodeData) {
-                            this.onNodeClick(object.userData.nodeData);
-                        }
-                    } else {
-                        document.getElementById('nodeInfo').style.display = 'none';
-                    }
-                });
-            }
-            
-            loadWorkflow(workflowData) {
-                this.clearScene();
-                
-                const parsedNodes = this.parseWorkflow(workflowData);
-                this.layoutNodes(parsedNodes);
-                this.createEdges();
-                
-                this.updateStats();
-                this.showToast('Workflow loaded successfully');
-            }
-            
-            parseWorkflow(data) {
-                const nodes = [];
-                let nodeId = 0;
-                
-                const traverse = (tasks, parent = null, depth = 0) => {
-                    if (!tasks || !Array.isArray(tasks)) return;
-                    
-                    tasks.forEach(task => {
-                        const node = {
-                            id: nodeId++,
-                            name: task.name,
-                            taskReferenceName: task.taskReferenceName,
-                            type: task.type,
-                            parent: parent,
-                            depth: depth,
-                            children: [],
-                            collapsed: false
-                        };
-                        
-                        nodes.push(node);
-                        this.nodeMap.set(node.id, node);
-                        
-                        if (parent) {
-                            parent.children.push(node);
-                        }
-                        
-                        // Handle sub-workflows
-                        if (task.type === 'SUB_WORKFLOW' && task.subWorkflowParam && task.subWorkflowParam.workflowDefinition) {
-                            traverse(task.subWorkflowParam.workflowDefinition.tasks, node, depth + 1);
-                        }
-                        
-                        // Handle fork tasks
-                        if (task.type === 'FORK_JOIN' && task.forkTasks) {
-                            task.forkTasks.forEach(forkBranch => {
-                                traverse(forkBranch, node, depth + 1);
-                            });
-                        }
-                        
-                        // Handle decision cases
-                        if (task.type === 'DECISION' && task.decisionCases) {
-                            Object.values(task.decisionCases).forEach(caseTasks => {
-                                traverse(caseTasks, node, depth + 1);
-                            });
-                        }
-                        
-                        // Handle default case
-                        if (task.defaultCase) {
-                            traverse(task.defaultCase, node, depth + 1);
-                        }
-                    });
-                };
-                
-                traverse(data.tasks || []);
-                return nodes;
-            }
-            
-            layoutNodes(nodes) {
-                const levels = {};
-                
-                nodes.forEach(node => {
-                    if (!levels[node.depth]) {
-                        levels[node.depth] = [];
-                    }
-                    levels[node.depth].push(node);
-                });
-                
-                const maxDepth = Math.max(...Object.keys(levels).map(Number));
-                const horizontalSpacing = 15;
-                const verticalSpacing = 12;
-                
-                Object.keys(levels).forEach(depth => {
-                    const levelNodes = levels[depth];
-                    const levelWidth = levelNodes.length * horizontalSpacing;
-                    const startX = -levelWidth / 2;
-                    
-                    levelNodes.forEach((node, index) => {
-                        const x = startX + index * horizontalSpacing;
-                        const y = -depth * verticalSpacing;
-                        const z = 0;
-                        
-                        this.createNode(node, x, y, z);
-                    });
-                });
-            }
-            
-            createNode(nodeData, x, y, z) {
-                const hasChildren = nodeData.children.length > 0;
-                const size = hasChildren ? 1.5 : 1.2;
-                
-                const geometry = new THREE.BoxGeometry(size, size, size);
-                const color = this.getNodeColor(nodeData.type);
-                const material = new THREE.MeshPhongMaterial({
-                    color: color,
-                    emissive: color,
-                    emissiveIntensity: 0.2,
-                    shininess: 100
-                });
-                
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.set(x, y, z);
-                mesh.userData.nodeData = nodeData;
-                
-                this.scene.add(mesh);
-                this.nodes.push({ mesh, data: nodeData });
-                
-                // Add edge glow for collapsible nodes
-                if (hasChildren) {
-                    const edgeGeometry = new THREE.EdgesGeometry(geometry);
-                    const edgeMaterial = new THREE.LineBasicMaterial({ 
-                        color: 0xffffff,
-                        linewidth: 2
-                    });
-                    const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
-                    mesh.add(edges);
+                scale = newScale;
+                viewBox.width = 2000 / scale;
+                viewBox.height = 1000 / scale;
+                updateViewBox();
+            });
+
+            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+        }
+
+        function updateViewBox() {
+            svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    loadWorkflow(data);
+                    document.getElementById('empty-state').style.display = 'none';
+                } catch (error) {
+                    alert('Error parsing JSON: ' + error.message);
                 }
-                
-                // Add text sprite
-                this.createTextLabel(nodeData.taskReferenceName || nodeData.name, x, y - 1, z);
-            }
-            
-            createTextLabel(text, x, y, z) {
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = 512;
-                canvas.height = 128;
-                
-                context.fillStyle = '#1f2937';
-                context.fillRect(0, 0, canvas.width, canvas.height);
-                
-                context.font = 'bold 48px monospace';
-                context.fillStyle = '#f9fafb';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                
-                const maxWidth = canvas.width - 40;
-                const truncated = text.length > 20 ? text.substring(0, 20) + '...' : text;
-                context.fillText(truncated, canvas.width / 2, canvas.height / 2);
-                
-                const texture = new THREE.CanvasTexture(canvas);
-                const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-                const sprite = new THREE.Sprite(spriteMaterial);
-                sprite.position.set(x, y, z);
-                sprite.scale.set(4, 1, 1);
-                
-                this.scene.add(sprite);
-            }
-            
-            createEdges() {
-                this.nodes.forEach(({ mesh, data }) => {
-                    data.children.forEach(child => {
-                        const childNode = this.nodes.find(n => n.data.id === child.id);
-                        if (childNode && !this.collapsedNodes.has(data.id)) {
-                            this.createEdge(mesh.position, childNode.mesh.position);
-                        }
-                    });
+            };
+            reader.readAsText(file);
+        }
+
+        // Parse workflow
+        function parseWorkflow(data) {
+            allNodes = [];
+            allEdges = [];
+            let nodeId = 0;
+
+            function traverse(tasks, parent = null, depth = 0) {
+                if (!tasks || tasks.length === 0) return;
+
+                tasks.forEach((task, index) => {
+                    const node = {
+                        id: nodeId++,
+                        name: task.referenceTaskName || task.taskReferenceName || task.name || 'Unnamed Task',
+                        type: task.taskType || 'SIMPLE',
+                        status: task.status || 'N/A',
+                        parent: parent,
+                        depth: depth,
+                        children: [],
+                        x: 0,
+                        y: 0,
+                        visible: true,
+                        taskId: task.taskId,
+                        subWorkflowId: task.subWorkflowId,
+                        startTime: task.startTime,
+                        endTime: task.endTime
+                    };
+
+                    allNodes.push(node);
+
+                    if (parent) {
+                        parent.children.push(node);
+                        allEdges.push({ from: parent, to: node });
+                    }
+
+                    // Handle sub-workflows
+                    if (task.subWorkflow && task.subWorkflow.tasks) {
+                        traverse(task.subWorkflow.tasks, node, depth + 1);
+                    }
                 });
             }
+
+            traverse(data.tasks || []);
+        }
+
+        // Layout algorithm
+        function layoutNodes() {
+            const levels = {};
             
-            createEdge(start, end) {
-                const points = [];
-                points.push(new THREE.Vector3(start.x, start.y, start.z));
-                points.push(new THREE.Vector3(end.x, end.y, end.z));
-                
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const material = new THREE.LineBasicMaterial({
-                    color: 0x3b82f6,
-                    opacity: 0.6,
-                    transparent: true
+            // Group by depth
+            allNodes.forEach(node => {
+                if (!levels[node.depth]) levels[node.depth] = [];
+                levels[node.depth].push(node);
+            });
+
+            // Position nodes
+            Object.keys(levels).forEach(depth => {
+                const levelNodes = levels[depth];
+                const totalWidth = levelNodes.length * HORIZONTAL_SPACING;
+                const startX = -totalWidth / 2 + HORIZONTAL_SPACING / 2;
+
+                levelNodes.forEach((node, index) => {
+                    node.x = startX + index * HORIZONTAL_SPACING;
+                    node.y = PADDING + parseInt(depth) * VERTICAL_SPACING;
                 });
-                
-                const line = new THREE.Line(geometry, material);
-                this.scene.add(line);
-                this.edges.push(line);
-            }
+            });
+
+            // Calculate SVG size
+            const maxX = Math.max(...allNodes.map(n => n.x)) + NODE_WIDTH + PADDING;
+            const minX = Math.min(...allNodes.map(n => n.x)) - PADDING;
+            const maxY = Math.max(...allNodes.map(n => n.y)) + NODE_HEIGHT + PADDING;
             
-            getNodeColor(type) {
-                const colors = {
-                    'SUB_WORKFLOW': 0x8b5cf6,
-                    'FORK_JOIN': 0x10b981,
-                    'JOIN': 0x10b981,
-                    'DECISION': 0xf59e0b,
-                    'SWITCH': 0xf59e0b,
-                    'SIMPLE': 0x3b82f6,
-                    'HTTP': 0x3b82f6,
-                    'EVENT': 0xec4899,
-                    'WAIT': 0x6366f1
-                };
-                
-                return colors[type] || 0x3b82f6;
-            }
+            const width = Math.max(maxX - minX, 2000);
+            const height = Math.max(maxY, 1000);
             
-            onNodeClick(nodeData) {
-                const hasChildren = nodeData.children.length > 0;
+            svg.setAttribute('width', width);
+            svg.setAttribute('height', height);
+            
+            viewBox = { x: minX, y: 0, width: width, height: height };
+        }
+
+        // Get node color
+        function getNodeColor(type, status) {
+            if (status === 'FAILED') return '#ef4444';
+            
+            const colors = {
+                'SUB_WORKFLOW': '#8b5cf6',
+                'DECISION': '#10b981',
+                'SWITCH': '#10b981',
+                'HTTP': '#f59e0b',
+                'HUMAN': '#ec4899',
+                'INLINE': '#06b6d4',
+                'JSON_JQ_TRANSFORM': '#14b8a6',
+                'SIMPLE': '#3b82f6',
+                'FORK_JOIN': '#10b981',
+                'JOIN': '#10b981'
+            };
+            return colors[type] || '#6366f1';
+        }
+
+        // Render visualization
+        function render() {
+            svgGroup.innerHTML = '';
+
+            // Update visibility
+            updateVisibility();
+
+            // Draw edges
+            allEdges.forEach(edge => {
+                if (!edge.from.visible || !edge.to.visible) return;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const fromX = edge.from.x + NODE_WIDTH / 2;
+                const fromY = edge.from.y + NODE_HEIGHT;
+                const toX = edge.to.x + NODE_WIDTH / 2;
+                const toY = edge.to.y;
                 
-                if (hasChildren) {
-                    const isCollapsed = this.collapsedNodes.has(nodeData.id);
-                    
-                    if (isCollapsed) {
-                        this.expandNode(nodeData);
-                    } else {
-                        this.collapseNode(nodeData);
+                const midY = (fromY + toY) / 2;
+                const d = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
+                
+                path.setAttribute('d', d);
+                path.setAttribute('class', 'edge');
+                svgGroup.appendChild(path);
+            });
+
+            // Draw nodes
+            allNodes.forEach(node => {
+                if (!node.visible) return;
+
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'node');
+                if (node.children.length > 0) {
+                    g.classList.add('has-children');
+                    if (collapsedNodes.has(node.id)) {
+                        g.classList.add('collapsed');
                     }
                 }
-                
-                this.showNodeInfo(nodeData);
-            }
-            
-            collapseNode(nodeData) {
-                this.collapsedNodes.add(nodeData.id);
-                
-                const hideChildren = (node) => {
-                    node.children.forEach(child => {
-                        const childNode = this.nodes.find(n => n.data.id === child.id);
-                        if (childNode) {
-                            childNode.mesh.visible = false;
-                            hideChildren(child);
-                        }
-                    });
-                };
-                
-                hideChildren(nodeData);
-                this.redrawEdges();
-                this.showToast('Node collapsed');
-            }
-            
-            expandNode(nodeData) {
-                this.collapsedNodes.delete(nodeData.id);
-                
-                const showChildren = (node) => {
-                    node.children.forEach(child => {
-                        const childNode = this.nodes.find(n => n.data.id === child.id);
-                        if (childNode) {
-                            childNode.mesh.visible = true;
-                            if (!this.collapsedNodes.has(child.id)) {
-                                showChildren(child);
-                            }
-                        }
-                    });
-                };
-                
-                showChildren(nodeData);
-                this.redrawEdges();
-                this.showToast('Node expanded');
-            }
-            
-            redrawEdges() {
-                this.edges.forEach(edge => this.scene.remove(edge));
-                this.edges = [];
-                this.createEdges();
-            }
-            
-            showNodeInfo(nodeData) {
-                const infoPanel = document.getElementById('nodeInfo');
-                infoPanel.innerHTML = `
-                    <h3>${nodeData.taskReferenceName || nodeData.name}</h3>
-                    <div class="info-row">
-                        <span>Type:</span>
-                        <span>${nodeData.type}</span>
-                    </div>
-                    <div class="info-row">
-                        <span>Name:</span>
-                        <span>${nodeData.name}</span>
-                    </div>
-                    <div class="info-row">
-                        <span>Depth:</span>
-                        <span>${nodeData.depth}</span>
-                    </div>
-                    <div class="info-row">
-                        <span>Children:</span>
-                        <span>${nodeData.children.length}</span>
-                    </div>
-                    ${nodeData.children.length > 0 ? `
-                        <div class="info-row">
-                            <span>Status:</span>
-                            <span>${this.collapsedNodes.has(nodeData.id) ? 'Collapsed' : 'Expanded'}</span>
-                        </div>
-                    ` : ''}
-                `;
-                infoPanel.style.display = 'block';
-            }
-            
-            expandAll() {
-                this.collapsedNodes.clear();
-                this.nodes.forEach(({ mesh }) => {
-                    mesh.visible = true;
+                g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+
+                // Rectangle
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('class', 'node-rect');
+                rect.setAttribute('width', NODE_WIDTH);
+                rect.setAttribute('height', NODE_HEIGHT);
+                rect.setAttribute('rx', 6);
+                rect.setAttribute('fill', getNodeColor(node.type, node.status));
+                rect.setAttribute('stroke', '#e1e8ed');
+                rect.setAttribute('stroke-width', 2);
+                g.appendChild(rect);
+
+                // Node name
+                const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text1.setAttribute('class', 'node-text');
+                text1.setAttribute('x', NODE_WIDTH / 2);
+                text1.setAttribute('y', 28);
+                text1.setAttribute('text-anchor', 'middle');
+                text1.setAttribute('fill', '#ffffff');
+                const truncated = node.name.length > 22 ? node.name.substring(0, 22) + '...' : node.name;
+                text1.textContent = truncated;
+                g.appendChild(text1);
+
+                // Node type
+                const text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text2.setAttribute('class', 'node-type');
+                text2.setAttribute('x', NODE_WIDTH / 2);
+                text2.setAttribute('y', 48);
+                text2.setAttribute('text-anchor', 'middle');
+                text2.setAttribute('fill', '#ffffff');
+                text2.textContent = node.type;
+                g.appendChild(text2);
+
+                // Collapse indicator
+                if (node.children.length > 0) {
+                    const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    indicator.setAttribute('class', 'collapse-indicator');
+                    indicator.setAttribute('transform', `translate(${NODE_WIDTH - 20}, 15)`);
+                    indicator.style.color = '#ffffff';
+
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('r', 10);
+                    indicator.appendChild(circle);
+
+                    const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    symbol.setAttribute('text-anchor', 'middle');
+                    symbol.setAttribute('y', 5);
+                    symbol.textContent = collapsedNodes.has(node.id) ? '+' : '−';
+                    indicator.appendChild(symbol);
+
+                    g.appendChild(indicator);
+                }
+
+                g.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleNodeClick(node);
                 });
-                this.redrawEdges();
-                this.showToast('All nodes expanded');
-            }
-            
-            collapseAll() {
-                this.nodes.forEach(({ data }) => {
-                    if (data.children.length > 0) {
-                        this.collapsedNodes.add(data.id);
+
+                svgGroup.appendChild(g);
+            });
+
+            updateStats();
+        }
+
+        function updateVisibility() {
+            allNodes.forEach(node => {
+                node.visible = true;
+                
+                // Check if any parent is collapsed
+                let parent = node.parent;
+                while (parent) {
+                    if (collapsedNodes.has(parent.id)) {
+                        node.visible = false;
+                        break;
                     }
-                });
-                
-                this.nodes.forEach(({ mesh, data }) => {
-                    if (data.depth > 0) {
-                        mesh.visible = false;
-                    }
-                });
-                
-                this.redrawEdges();
-                this.showToast('All nodes collapsed');
-            }
-            
-            resetCamera() {
-                this.camera.position.set(0, 20, 50);
-                this.camera.lookAt(0, 0, 0);
-                this.showToast('Camera reset');
-            }
-            
-            clearScene() {
-                this.nodes.forEach(({ mesh }) => {
-                    this.scene.remove(mesh);
-                });
-                this.edges.forEach(edge => {
-                    this.scene.remove(edge);
-                });
-                
-                // Remove sprites
-                this.scene.children = this.scene.children.filter(child => 
-                    !(child instanceof THREE.Sprite)
-                );
-                
-                this.nodes = [];
-                this.edges = [];
-                this.nodeMap.clear();
-                this.collapsedNodes.clear();
-            }
-            
-            updateStats() {
-                const visibleNodes = this.nodes.filter(({ mesh }) => mesh.visible).length;
-                const maxDepth = Math.max(...this.nodes.map(({ data }) => data.depth));
-                
-                document.getElementById('nodeCount').textContent = visibleNodes;
-                document.getElementById('edgeCount').textContent = this.edges.length;
-                document.getElementById('depthCount').textContent = maxDepth;
-            }
-            
-            showToast(message) {
-                const toast = document.getElementById('toast');
-                toast.textContent = message;
-                toast.classList.add('show');
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            }
-            
-            animate() {
-                requestAnimationFrame(() => this.animate());
-                
-                // Rotate nodes slightly for visual effect
-                this.nodes.forEach(({ mesh }) => {
-                    mesh.rotation.y += 0.003;
-                });
-                
-                // Update FPS
-                if (!this.lastTime) this.lastTime = performance.now();
-                const now = performance.now();
-                const fps = Math.round(1000 / (now - this.lastTime));
-                this.lastTime = now;
-                document.getElementById('fps').textContent = fps;
-                
-                this.renderer.render(this.scene, this.camera);
-            }
-            
-            onWindowResize() {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    parent = parent.parent;
+                }
+            });
+        }
+
+        function handleNodeClick(node) {
+            if (node.children.length > 0) {
+                toggleCollapse(node);
+            } else {
+                showNodeInfo(node);
             }
         }
-        
-        // Initialize application
-        const container = document.getElementById('container');
-        const dag = new WorkflowDAG(container);
-        
-        // File upload handler
-        document.getElementById('fileInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const data = JSON.parse(event.target.result);
-                        dag.loadWorkflow(data);
-                    } catch (error) {
-                        dag.showToast('Error parsing JSON: ' + error.message);
-                    }
-                };
-                reader.readAsText(file);
+
+        function toggleCollapse(node) {
+            if (collapsedNodes.has(node.id)) {
+                collapsedNodes.delete(node.id);
+            } else {
+                collapsedNodes.add(node.id);
             }
-        });
-        
-        // Control buttons
-        document.getElementById('expandAll').addEventListener('click', () => dag.expandAll());
-        document.getElementById('collapseAll').addEventListener('click', () => dag.collapseAll());
-        document.getElementById('resetView').addEventListener('click', () => dag.resetCamera());
-        
-        // Sample workflow for testing
-        const sampleWorkflow = {
-            name: "sample_workflow",
-            tasks: [
-                {
-                    name: "start_task",
-                    taskReferenceName: "start",
-                    type: "SIMPLE"
-                },
-                {
-                    name: "process_workflow",
-                    taskReferenceName: "sub_wf_1",
-                    type: "SUB_WORKFLOW",
-                    subWorkflowParam: {
-                        workflowDefinition: {
-                            tasks: [
-                                {
-                                    name: "nested_task_1",
-                                    taskReferenceName: "nested_1",
-                                    type: "SIMPLE"
-                                },
-                                {
-                                    name: "nested_task_2",
-                                    taskReferenceName: "nested_2",
-                                    type: "SIMPLE"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    name: "fork_processing",
-                    taskReferenceName: "fork_1",
-                    type: "FORK_JOIN",
-                    forkTasks: [
-                        [
-                            {
-                                name: "branch_1_task",
-                                taskReferenceName: "branch_1",
-                                type: "SIMPLE"
-                            }
-                        ],
-                        [
-                            {
-                                name: "branch_2_task",
-                                taskReferenceName: "branch_2",
-                                type: "SIMPLE"
-                            }
-                        ]
-                    ]
-                },
-                {
-                    name: "end_task",
-                    taskReferenceName: "end",
-                    type: "SIMPLE"
+            render();
+        }
+
+        function showNodeInfo(node) {
+            const panel = document.getElementById('info-panel');
+            const content = document.getElementById('info-content');
+            
+            const duration = node.startTime && node.endTime 
+                ? ((new Date(node.endTime) - new Date(node.startTime)) / 1000).toFixed(2) + 's'
+                : 'N/A';
+
+            content.innerHTML = `
+                <h3>${node.name}</h3>
+                <div class="info-row">
+                    <span class="info-label">Type</span>
+                    <span class="info-value">${node.type}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="info-value"><span class="status-badge status-${node.status}">${node.status}</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Depth</span>
+                    <span class="info-value">${node.depth}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Children</span>
+                    <span class="info-value">${node.children.length}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Duration</span>
+                    <span class="info-value">${duration}</span>
+                </div>
+                ${node.taskId ? `
+                <div class="info-row">
+                    <span class="info-label">Task ID</span>
+                    <span class="info-value" style="font-size: 10px;">${node.taskId.substring(0, 20)}...</span>
+                </div>` : ''}
+            `;
+            
+            panel.classList.add('show');
+        }
+
+        function closeInfo() {
+            document.getElementById('info-panel').classList.remove('show');
+        }
+
+        function updateStats() {
+            const visible = allNodes.filter(n => n.visible).length;
+            const maxDepth = allNodes.length > 0 ? Math.max(...allNodes.map(n => n.depth)) : 0;
+            
+            document.getElementById('totalTasks').textContent = allNodes.length;
+            document.getElementById('visibleTasks').textContent = visible;
+            document.getElementById('maxDepth').textContent = maxDepth;
+        }
+
+        function expandAll() {
+            collapsedNodes.clear();
+            render();
+        }
+
+        function collapseAll() {
+            allNodes.forEach(node => {
+                if (node.children.length > 0 && node.depth === 0) {
+                    collapsedNodes.add(node.id);
                 }
-            ]
-        };
-        
-        // Load sample workflow on start
-        setTimeout(() => {
-            dag.loadWorkflow(sampleWorkflow);
-        }, 500);
+            });
+            render();
+        }
+
+        function resetView() {
+            scale = 1;
+            layoutNodes();
+            updateViewBox();
+            render();
+        }
+
+        function loadWorkflow(data) {
+            collapsedNodes.clear();
+            parseWorkflow(data);
+            layoutNodes();
+            render();
+            updateViewBox();
+        }
+
+        // Initialize on load
+        init();
     </script>
 </body>
 </html>
