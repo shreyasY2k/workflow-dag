@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conductor Workflow Visualizer</title>
+    <title>Conductor Workflow Viewer</title>
     <style>
         * {
             margin: 0;
@@ -13,32 +13,33 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: #f5f7fa;
-            color: #2c3e50;
-            overflow: hidden;
+            background: #f8f9fa;
+            color: #212529;
             height: 100vh;
+            overflow: hidden;
         }
 
         #header {
             background: #fff;
-            border-bottom: 1px solid #e1e8ed;
+            border-bottom: 2px solid #e9ecef;
             padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            z-index: 100;
         }
 
         #header h1 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #212529;
         }
 
-        #controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
+        .workflow-info {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
         }
 
         .file-input-wrapper {
@@ -54,481 +55,410 @@
 
         .file-input-wrapper label {
             display: inline-block;
-            padding: 8px 16px;
-            background: #3498db;
+            padding: 10px 20px;
+            background: #0d6efd;
             color: white;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
             transition: background 0.2s;
         }
 
         .file-input-wrapper label:hover {
-            background: #2980b9;
+            background: #0b5ed7;
         }
 
-        button {
-            padding: 8px 16px;
-            background: white;
-            color: #2c3e50;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s;
+        #main-content {
+            display: flex;
+            height: calc(100vh - 70px);
         }
 
-        button:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
+        #sidebar {
+            width: 400px;
+            background: #fff;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+            flex-shrink: 0;
         }
 
-        #canvas-container {
-            width: 100%;
-            height: calc(100vh - 60px);
-            overflow: hidden;
-            position: relative;
-            background: #ffffff;
-            cursor: grab;
+        #detail-panel {
+            flex: 1;
+            background: #f8f9fa;
+            overflow-y: auto;
+            padding: 24px;
         }
 
-        #canvas-container:active {
-            cursor: grabbing;
+        .sidebar-header {
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        svg {
-            display: block;
-        }
-
-        .node {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .node-rect {
-            transition: all 0.2s;
-        }
-
-        .node:hover .node-rect {
-            filter: brightness(1.05);
-            stroke-width: 2.5;
-        }
-
-        .node.has-children .node-rect {
-            stroke-width: 2.5;
-        }
-
-        .node.collapsed .node-rect {
-            stroke-dasharray: 4,4;
-        }
-
-        .node-text {
-            pointer-events: none;
-            user-select: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .node-type {
-            pointer-events: none;
-            user-select: none;
-            font-size: 11px;
-            opacity: 0.8;
-        }
-
-        .edge {
-            fill: none;
-            stroke: #cbd5e0;
-            stroke-width: 2;
-            transition: all 0.2s;
-        }
-
-        .collapse-indicator {
-            transition: all 0.2s;
-        }
-
-        .collapse-indicator circle {
-            fill: white;
-            stroke: currentColor;
-            stroke-width: 2;
-        }
-
-        .collapse-indicator text {
+        .sidebar-header h2 {
             font-size: 14px;
-            font-weight: bold;
-            fill: currentColor;
-        }
-
-        #info-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            max-width: 320px;
-            display: none;
-            border: 1px solid #e1e8ed;
-        }
-
-        #info-panel.show {
-            display: block;
-            animation: slideIn 0.2s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        #info-panel h3 {
-            font-size: 15px;
             font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 12px;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-box {
+            margin-top: 12px;
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #0d6efd;
+        }
+
+        .tree-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background 0.15s;
+            user-select: none;
+        }
+
+        .tree-item:hover {
+            background: #f8f9fa;
+        }
+
+        .tree-item.active {
+            background: #e7f1ff;
+            border-left: 3px solid #0d6efd;
+        }
+
+        .tree-item.has-children {
+            font-weight: 500;
+        }
+
+        .tree-item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .expand-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #6c757d;
+            transition: transform 0.2s;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .task-name {
+            flex: 1;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-COMPLETED { background: #28a745; }
+        .status-FAILED { background: #dc3545; }
+        .status-RUNNING { background: #ffc107; }
+        .status-SCHEDULED { background: #17a2b8; }
+        .status-SKIPPED { background: #6c757d; }
+
+        .task-type {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: #e9ecef;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .tree-children {
+            margin-left: 24px;
+            display: none;
+        }
+
+        .tree-children.expanded {
+            display: block;
+        }
+
+        .detail-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .detail-card h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #212529;
             word-break: break-word;
         }
 
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 12px;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #6b7280;
-            font-weight: 500;
-        }
-
-        .info-value {
-            color: #2c3e50;
+        .detail-card h3 {
+            font-size: 16px;
             font-weight: 600;
-            text-align: right;
+            margin-bottom: 16px;
+            color: #495057;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #212529;
             word-break: break-all;
-            max-width: 180px;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
             font-weight: 600;
             text-transform: uppercase;
         }
 
-        .status-COMPLETED {
+        .status-badge.COMPLETED {
             background: #d4edda;
             color: #155724;
         }
 
-        .status-FAILED {
+        .status-badge.FAILED {
             background: #f8d7da;
             color: #721c24;
         }
 
-        .status-RUNNING {
+        .status-badge.RUNNING {
             background: #fff3cd;
             color: #856404;
         }
 
-        .status-SCHEDULED {
+        .status-badge.SCHEDULED {
             background: #d1ecf1;
             color: #0c5460;
         }
 
-        .status-SKIPPED {
-            background: #e2e3e5;
-            color: #383d41;
+        .timeline {
+            margin-top: 24px;
         }
 
-        #legend {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: white;
-            padding: 16px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #e1e8ed;
+        .timeline-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
 
-        #legend h4 {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .timeline-item strong {
+            color: #495057;
         }
 
-        .legend-item {
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 13px;
+        }
+
+        .stat {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-
-        .legend-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .legend-color {
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
-            border-radius: 4px;
-            border: 1px solid #e1e8ed;
-            flex-shrink: 0;
-        }
-
-        #stats {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            padding: 16px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #e1e8ed;
-            font-size: 12px;
-        }
-
-        #stats h4 {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            gap: 20px;
-        }
-
-        .stat-row:last-child {
-            margin-bottom: 0;
+            gap: 8px;
         }
 
         .stat-label {
-            color: #6b7280;
+            color: #6c757d;
+            font-weight: 500;
         }
 
         .stat-value {
             font-weight: 600;
-            color: #2c3e50;
+            color: #212529;
         }
 
-        #empty-state {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #9ca3af;
+        .duration-bar {
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin-top: 16px;
+            overflow: hidden;
         }
 
-        #empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 16px;
-            opacity: 0.5;
+        .duration-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+            border-radius: 3px;
         }
 
-        #empty-state h2 {
-            font-size: 18px;
+        .sub-workflow-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #e7f1ff;
+            color: #0d6efd;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: #6b7280;
+            margin-top: 8px;
         }
 
-        #empty-state p {
-            font-size: 14px;
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin-top: 8px;
         }
 
-        .close-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #9ca3af;
-            cursor: pointer;
-            padding: 4px;
-            line-height: 1;
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
 
-        .close-btn:hover {
-            color: #6b7280;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
     </style>
 </head>
 <body>
     <div id="header">
-        <h1>Conductor Workflow Visualizer</h1>
-        <div id="controls">
-            <div class="file-input-wrapper">
-                <input type="file" id="fileInput" accept=".json">
-                <label for="fileInput">Load Workflow</label>
+        <div>
+            <h1>Conductor Workflow Viewer</h1>
+            <div class="workflow-info" id="workflowInfo"></div>
+        </div>
+        <div class="file-input-wrapper">
+            <input type="file" id="fileInput" accept=".json">
+            <label for="fileInput">Load Workflow JSON</label>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <h2>Task Hierarchy</h2>
+                <input type="text" class="search-box" id="searchBox" placeholder="Search tasks...">
             </div>
-            <button onclick="expandAll()">Expand All</button>
-            <button onclick="collapseAll()">Collapse All</button>
-            <button onclick="resetView()">Reset View</button>
+            <div class="stats-bar">
+                <div class="stat">
+                    <span class="stat-label">Total:</span>
+                    <span class="stat-value" id="totalTasks">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Completed:</span>
+                    <span class="stat-value" id="completedTasks">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Failed:</span>
+                    <span class="stat-value" id="failedTasks">0</span>
+                </div>
+            </div>
+            <div id="tree-container"></div>
         </div>
-    </div>
 
-    <div id="canvas-container">
-        <svg id="canvas"></svg>
-        
-        <div id="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-            </svg>
-            <h2>No Workflow Loaded</h2>
-            <p>Upload a workflow JSON file to visualize</p>
-        </div>
-    </div>
-
-    <div id="info-panel">
-        <button class="close-btn" onclick="closeInfo()">×</button>
-        <div id="info-content"></div>
-    </div>
-
-    <div id="legend">
-        <h4>Task Types</h4>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #3b82f6;"></div>
-            <span>Simple</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #8b5cf6;"></div>
-            <span>Sub-Workflow</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #10b981;"></div>
-            <span>Decision</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #f59e0b;"></div>
-            <span>HTTP</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #ec4899;"></div>
-            <span>Human</span>
-        </div>
-    </div>
-
-    <div id="stats">
-        <h4>Statistics</h4>
-        <div class="stat-row">
-            <span class="stat-label">Total Tasks:</span>
-            <span class="stat-value" id="totalTasks">0</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">Visible:</span>
-            <span class="stat-value" id="visibleTasks">0</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">Max Depth:</span>
-            <span class="stat-value" id="maxDepth">0</span>
+        <div id="detail-panel">
+            <div class="empty-state" id="emptyState">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <h2>Select a task to view details</h2>
+                <p>Click on any task in the tree to see its information</p>
+            </div>
+            <div id="detailContent"></div>
         </div>
     </div>
 
     <script>
-        // Constants
-        const NODE_WIDTH = 200;
-        const NODE_HEIGHT = 70;
-        const HORIZONTAL_SPACING = 280;
-        const VERTICAL_SPACING = 120;
-        const PADDING = 100;
-
-        // State
-        let allNodes = [];
-        let allEdges = [];
-        let collapsedNodes = new Set();
-        let svg = document.getElementById('canvas');
-        let svgGroup;
-        
-        // Pan & Zoom
-        let viewBox = { x: 0, y: 0, width: 2000, height: 1000 };
-        let isPanning = false;
-        let startPoint = { x: 0, y: 0 };
-        let scale = 1;
+        let workflowData = null;
+        let allTasks = [];
+        let expandedNodes = new Set();
+        let selectedTask = null;
 
         // Initialize
-        function init() {
-            svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            svg.appendChild(svgGroup);
-            updateViewBox();
-            setupEventListeners();
-        }
-
-        function setupEventListeners() {
-            const container = document.getElementById('canvas-container');
-            
-            container.addEventListener('mousedown', (e) => {
-                if (e.target.closest('.node')) return;
-                isPanning = true;
-                startPoint = { x: e.clientX, y: e.clientY };
-                e.preventDefault();
-            });
-
-            container.addEventListener('mousemove', (e) => {
-                if (!isPanning) return;
-                const dx = (e.clientX - startPoint.x) / scale;
-                const dy = (e.clientY - startPoint.y) / scale;
-                viewBox.x -= dx;
-                viewBox.y -= dy;
-                updateViewBox();
-                startPoint = { x: e.clientX, y: e.clientY };
-            });
-
-            container.addEventListener('mouseup', () => {
-                isPanning = false;
-            });
-
-            container.addEventListener('mouseleave', () => {
-                isPanning = false;
-            });
-
-            container.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const delta = e.deltaY > 0 ? 0.9 : 1.1;
-                const newScale = scale * delta;
-                if (newScale < 0.1 || newScale > 3) return;
-                
-                scale = newScale;
-                viewBox.width = 2000 / scale;
-                viewBox.height = 1000 / scale;
-                updateViewBox();
-            });
-
-            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-        }
-
-        function updateViewBox() {
-            svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
-        }
+        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+        document.getElementById('searchBox').addEventListener('input', handleSearch);
 
         function handleFileUpload(e) {
             const file = e.target.files[0];
@@ -537,9 +467,8 @@
             const reader = new FileReader();
             reader.onload = (event) => {
                 try {
-                    const data = JSON.parse(event.target.result);
-                    loadWorkflow(data);
-                    document.getElementById('empty-state').style.display = 'none';
+                    workflowData = JSON.parse(event.target.result);
+                    loadWorkflow(workflowData);
                 } catch (error) {
                     alert('Error parsing JSON: ' + error.message);
                 }
@@ -547,329 +476,267 @@
             reader.readAsText(file);
         }
 
-        // Parse workflow
-        function parseWorkflow(data) {
-            allNodes = [];
-            allEdges = [];
-            let nodeId = 0;
+        function loadWorkflow(data) {
+            // Update header info
+            const info = document.getElementById('workflowInfo');
+            info.textContent = `${data.workflowName} v${data.workflowVersion} • ${data.status}`;
 
-            function traverse(tasks, parent = null, depth = 0) {
-                if (!tasks || tasks.length === 0) return;
+            // Parse tasks
+            allTasks = [];
+            parseTasks(data.tasks, null, 0);
 
-                tasks.forEach((task, index) => {
-                    const node = {
-                        id: nodeId++,
-                        name: task.referenceTaskName || task.taskReferenceName || task.name || 'Unnamed Task',
-                        type: task.taskType || 'SIMPLE',
-                        status: task.status || 'N/A',
-                        parent: parent,
-                        depth: depth,
-                        children: [],
-                        x: 0,
-                        y: 0,
-                        visible: true,
-                        taskId: task.taskId,
-                        subWorkflowId: task.subWorkflowId,
-                        startTime: task.startTime,
-                        endTime: task.endTime
-                    };
-
-                    allNodes.push(node);
-
-                    if (parent) {
-                        parent.children.push(node);
-                        allEdges.push({ from: parent, to: node });
-                    }
-
-                    // Handle sub-workflows
-                    if (task.subWorkflow && task.subWorkflow.tasks) {
-                        traverse(task.subWorkflow.tasks, node, depth + 1);
-                    }
-                });
-            }
-
-            traverse(data.tasks || []);
-        }
-
-        // Layout algorithm
-        function layoutNodes() {
-            // Track position for each depth level
-            const depthCounters = {};
-            
-            function assignPosition(node) {
-                const depth = node.depth;
-                if (!depthCounters[depth]) {
-                    depthCounters[depth] = 0;
-                }
-                
-                node.x = PADDING + depth * HORIZONTAL_SPACING;
-                node.y = PADDING + depthCounters[depth] * VERTICAL_SPACING;
-                
-                depthCounters[depth]++;
-                
-                // Process children
-                node.children.forEach(child => {
-                    assignPosition(child);
-                });
-            }
-            
-            // Start with root nodes (nodes without parents)
-            const rootNodes = allNodes.filter(n => n.parent === null);
-            rootNodes.forEach(node => {
-                assignPosition(node);
-            });
-
-            // Calculate SVG size
-            const maxX = Math.max(...allNodes.map(n => n.x)) + NODE_WIDTH + PADDING;
-            const maxY = Math.max(...allNodes.map(n => n.y)) + NODE_HEIGHT + PADDING;
-            
-            const width = Math.max(maxX, 2000);
-            const height = Math.max(maxY, 1000);
-            
-            svg.setAttribute('width', width);
-            svg.setAttribute('height', height);
-            
-            viewBox = { x: 0, y: 0, width: width, height: height };
-        }
-
-        // Get node color
-        function getNodeColor(type, status) {
-            if (status === 'FAILED') return '#ef4444';
-            
-            const colors = {
-                'SUB_WORKFLOW': '#8b5cf6',
-                'DECISION': '#10b981',
-                'SWITCH': '#10b981',
-                'HTTP': '#f59e0b',
-                'HUMAN': '#ec4899',
-                'INLINE': '#06b6d4',
-                'JSON_JQ_TRANSFORM': '#14b8a6',
-                'SIMPLE': '#3b82f6',
-                'FORK_JOIN': '#10b981',
-                'JOIN': '#10b981'
-            };
-            return colors[type] || '#6366f1';
-        }
-
-        // Render visualization
-        function render() {
-            svgGroup.innerHTML = '';
-
-            // Update visibility
-            updateVisibility();
-
-            // Draw edges
-            allEdges.forEach(edge => {
-                if (!edge.from.visible || !edge.to.visible) return;
-
-                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                const fromX = edge.from.x + NODE_WIDTH;
-                const fromY = edge.from.y + NODE_HEIGHT / 2;
-                const toX = edge.to.x;
-                const toY = edge.to.y + NODE_HEIGHT / 2;
-                
-                const midX = (fromX + toX) / 2;
-                const d = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
-                
-                path.setAttribute('d', d);
-                path.setAttribute('class', 'edge');
-                svgGroup.appendChild(path);
-            });
-
-            // Draw nodes
-            allNodes.forEach(node => {
-                if (!node.visible) return;
-
-                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('class', 'node');
-                if (node.children.length > 0) {
-                    g.classList.add('has-children');
-                    if (collapsedNodes.has(node.id)) {
-                        g.classList.add('collapsed');
-                    }
-                }
-                g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
-
-                // Rectangle
-                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                rect.setAttribute('class', 'node-rect');
-                rect.setAttribute('width', NODE_WIDTH);
-                rect.setAttribute('height', NODE_HEIGHT);
-                rect.setAttribute('rx', 6);
-                rect.setAttribute('fill', getNodeColor(node.type, node.status));
-                rect.setAttribute('stroke', '#e1e8ed');
-                rect.setAttribute('stroke-width', 2);
-                g.appendChild(rect);
-
-                // Node name
-                const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text1.setAttribute('class', 'node-text');
-                text1.setAttribute('x', NODE_WIDTH / 2);
-                text1.setAttribute('y', 28);
-                text1.setAttribute('text-anchor', 'middle');
-                text1.setAttribute('fill', '#ffffff');
-                const truncated = node.name.length > 22 ? node.name.substring(0, 22) + '...' : node.name;
-                text1.textContent = truncated;
-                g.appendChild(text1);
-
-                // Node type
-                const text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text2.setAttribute('class', 'node-type');
-                text2.setAttribute('x', NODE_WIDTH / 2);
-                text2.setAttribute('y', 48);
-                text2.setAttribute('text-anchor', 'middle');
-                text2.setAttribute('fill', '#ffffff');
-                text2.textContent = node.type;
-                g.appendChild(text2);
-
-                // Collapse indicator
-                if (node.children.length > 0) {
-                    const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                    indicator.setAttribute('class', 'collapse-indicator');
-                    indicator.setAttribute('transform', `translate(${NODE_WIDTH - 20}, 15)`);
-                    indicator.style.color = '#ffffff';
-
-                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    circle.setAttribute('r', 10);
-                    indicator.appendChild(circle);
-
-                    const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    symbol.setAttribute('text-anchor', 'middle');
-                    symbol.setAttribute('y', 5);
-                    symbol.textContent = collapsedNodes.has(node.id) ? '+' : '−';
-                    indicator.appendChild(symbol);
-
-                    g.appendChild(indicator);
-                }
-
-                g.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    handleNodeClick(node);
-                });
-
-                svgGroup.appendChild(g);
-            });
-
+            // Update stats
             updateStats();
+
+            // Render tree
+            renderTree();
         }
 
-        function updateVisibility() {
-            allNodes.forEach(node => {
-                node.visible = true;
-                
-                // Check if any parent is collapsed
-                let parent = node.parent;
-                while (parent) {
-                    if (collapsedNodes.has(parent.id)) {
-                        node.visible = false;
-                        break;
-                    }
-                    parent = parent.parent;
+        function parseTasks(tasks, parent, depth) {
+            if (!tasks || tasks.length === 0) return;
+
+            tasks.forEach((task, index) => {
+                const taskObj = {
+                    id: allTasks.length,
+                    task: task,
+                    parent: parent,
+                    depth: depth,
+                    children: [],
+                    name: task.referenceTaskName || task.taskReferenceName || task.name || 'Unnamed Task',
+                    type: task.taskType || 'SIMPLE',
+                    status: task.status || 'N/A'
+                };
+
+                allTasks.push(taskObj);
+
+                if (parent) {
+                    parent.children.push(taskObj);
+                }
+
+                // Parse sub-workflows
+                if (task.subWorkflow && task.subWorkflow.tasks) {
+                    parseTasks(task.subWorkflow.tasks, taskObj, depth + 1);
                 }
             });
-        }
-
-        function handleNodeClick(node) {
-            if (node.children.length > 0) {
-                toggleCollapse(node);
-            } else {
-                showNodeInfo(node);
-            }
-        }
-
-        function toggleCollapse(node) {
-            if (collapsedNodes.has(node.id)) {
-                collapsedNodes.delete(node.id);
-            } else {
-                collapsedNodes.add(node.id);
-            }
-            render();
-        }
-
-        function showNodeInfo(node) {
-            const panel = document.getElementById('info-panel');
-            const content = document.getElementById('info-content');
-            
-            const duration = node.startTime && node.endTime 
-                ? ((new Date(node.endTime) - new Date(node.startTime)) / 1000).toFixed(2) + 's'
-                : 'N/A';
-
-            content.innerHTML = `
-                <h3>${node.name}</h3>
-                <div class="info-row">
-                    <span class="info-label">Type</span>
-                    <span class="info-value">${node.type}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Status</span>
-                    <span class="info-value"><span class="status-badge status-${node.status}">${node.status}</span></span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Depth</span>
-                    <span class="info-value">${node.depth}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Children</span>
-                    <span class="info-value">${node.children.length}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Duration</span>
-                    <span class="info-value">${duration}</span>
-                </div>
-                ${node.taskId ? `
-                <div class="info-row">
-                    <span class="info-label">Task ID</span>
-                    <span class="info-value" style="font-size: 10px;">${node.taskId.substring(0, 20)}...</span>
-                </div>` : ''}
-            `;
-            
-            panel.classList.add('show');
-        }
-
-        function closeInfo() {
-            document.getElementById('info-panel').classList.remove('show');
         }
 
         function updateStats() {
-            const visible = allNodes.filter(n => n.visible).length;
-            const maxDepth = allNodes.length > 0 ? Math.max(...allNodes.map(n => n.depth)) : 0;
-            
-            document.getElementById('totalTasks').textContent = allNodes.length;
-            document.getElementById('visibleTasks').textContent = visible;
-            document.getElementById('maxDepth').textContent = maxDepth;
+            const total = allTasks.length;
+            const completed = allTasks.filter(t => t.status === 'COMPLETED').length;
+            const failed = allTasks.filter(t => t.status === 'FAILED').length;
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('failedTasks').textContent = failed;
         }
 
-        function expandAll() {
-            collapsedNodes.clear();
-            render();
-        }
+        function renderTree(filter = '') {
+            const container = document.getElementById('tree-container');
+            container.innerHTML = '';
 
-        function collapseAll() {
-            allNodes.forEach(node => {
-                if (node.children.length > 0 && node.depth === 0) {
-                    collapsedNodes.add(node.id);
-                }
+            const rootTasks = allTasks.filter(t => t.parent === null);
+            rootTasks.forEach(task => {
+                const element = createTreeItem(task, filter);
+                if (element) container.appendChild(element);
             });
-            render();
         }
 
-        function resetView() {
-            scale = 1;
-            layoutNodes();
-            updateViewBox();
-            render();
+        function createTreeItem(taskObj, filter) {
+            // Filter check
+            if (filter && !taskObj.name.toLowerCase().includes(filter.toLowerCase())) {
+                const hasMatchingChild = hasMatchingDescendant(taskObj, filter);
+                if (!hasMatchingChild) return null;
+            }
+
+            const item = document.createElement('div');
+            item.className = 'tree-item';
+            if (taskObj.children.length > 0) {
+                item.classList.add('has-children');
+            }
+            if (selectedTask === taskObj.id) {
+                item.classList.add('active');
+            }
+
+            const header = document.createElement('div');
+            header.className = 'tree-item-header';
+
+            // Expand icon
+            if (taskObj.children.length > 0) {
+                const expandIcon = document.createElement('div');
+                expandIcon.className = 'expand-icon';
+                if (expandedNodes.has(taskObj.id)) {
+                    expandIcon.classList.add('expanded');
+                }
+                expandIcon.textContent = '▶';
+                expandIcon.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleExpand(taskObj.id);
+                };
+                header.appendChild(expandIcon);
+            } else {
+                const spacer = document.createElement('div');
+                spacer.style.width = '16px';
+                header.appendChild(spacer);
+            }
+
+            // Status dot
+            const statusDot = document.createElement('div');
+            statusDot.className = `status-dot status-${taskObj.status}`;
+            header.appendChild(statusDot);
+
+            // Task name
+            const taskName = document.createElement('div');
+            taskName.className = 'task-name';
+            taskName.textContent = taskObj.name;
+            taskName.title = taskObj.name;
+            header.appendChild(taskName);
+
+            // Task type
+            const taskType = document.createElement('span');
+            taskType.className = 'task-type';
+            taskType.textContent = taskObj.type;
+            header.appendChild(taskType);
+
+            item.appendChild(header);
+
+            // Add indent styling
+            item.style.paddingLeft = `${20 + taskObj.depth * 24}px`;
+
+            // Click handler
+            item.onclick = (e) => {
+                if (e.target === item || e.target === header || e.target === taskName) {
+                    selectTask(taskObj.id);
+                }
+            };
+
+            // Children
+            if (taskObj.children.length > 0) {
+                const childrenContainer = document.createElement('div');
+                childrenContainer.className = 'tree-children';
+                if (expandedNodes.has(taskObj.id)) {
+                    childrenContainer.classList.add('expanded');
+                }
+
+                taskObj.children.forEach(child => {
+                    const childElement = createTreeItem(child, filter);
+                    if (childElement) childrenContainer.appendChild(childElement);
+                });
+
+                item.appendChild(childrenContainer);
+            }
+
+            return item;
         }
 
-        function loadWorkflow(data) {
-            collapsedNodes.clear();
-            parseWorkflow(data);
-            layoutNodes();
-            render();
-            updateViewBox();
+        function hasMatchingDescendant(taskObj, filter) {
+            for (const child of taskObj.children) {
+                if (child.name.toLowerCase().includes(filter.toLowerCase())) {
+                    return true;
+                }
+                if (hasMatchingDescendant(child, filter)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        // Initialize on load
-        init();
+        function toggleExpand(taskId) {
+            if (expandedNodes.has(taskId)) {
+                expandedNodes.delete(taskId);
+            } else {
+                expandedNodes.add(taskId);
+            }
+            renderTree(document.getElementById('searchBox').value);
+        }
+
+        function selectTask(taskId) {
+            selectedTask = taskId;
+            renderTree(document.getElementById('searchBox').value);
+            showTaskDetail(allTasks[taskId]);
+        }
+
+        function showTaskDetail(taskObj) {
+            document.getElementById('emptyState').style.display = 'none';
+            const container = document.getElementById('detailContent');
+            
+            const task = taskObj.task;
+            const duration = task.startTime && task.endTime 
+                ? ((new Date(task.endTime) - new Date(task.startTime)) / 1000).toFixed(2)
+                : 'N/A';
+
+            container.innerHTML = `
+                <div class="detail-card">
+                    <h2>${taskObj.name}</h2>
+                    <span class="status-badge ${taskObj.status}">${taskObj.status}</span>
+                    ${task.subWorkflowId ? `<div class="sub-workflow-badge">📦 Sub-Workflow: ${task.subWorkflow?.workflowName || 'Unknown'}</div>` : ''}
+                    
+                    <h3 style="margin-top: 24px;">Task Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Task Type</div>
+                            <div class="detail-value">${taskObj.type}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">${duration}s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Retry Count</div>
+                            <div class="detail-value">${task.retryCount || 0}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Poll Count</div>
+                            <div class="detail-value">${task.pollCount || 0}</div>
+                        </div>
+                    </div>
+
+                    ${task.taskId ? `
+                    <h3 style="margin-top: 24px;">Identifiers</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Task ID</div>
+                            <div class="detail-value code-block">${task.taskId}</div>
+                        </div>
+                        ${task.subWorkflowId ? `
+                        <div class="detail-item">
+                            <div class="detail-label">Sub-Workflow ID</div>
+                            <div class="detail-value code-block">${task.subWorkflowId}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+
+                    ${task.startTime ? `
+                    <h3 style="margin-top: 24px;">Timeline</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <strong>Start:</strong> ${new Date(task.startTime).toLocaleString()}
+                        </div>
+                        ${task.endTime ? `
+                        <div class="timeline-item">
+                            <strong>End:</strong> ${new Date(task.endTime).toLocaleString()}
+                        </div>
+                        ` : ''}
+                        ${task.updateTime ? `
+                        <div class="timeline-item">
+                            <strong>Updated:</strong> ${new Date(task.updateTime).toLocaleString()}
+                        </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+
+                    ${taskObj.children.length > 0 ? `
+                    <h3 style="margin-top: 24px;">Sub-Tasks</h3>
+                    <div class="detail-value">${taskObj.children.length} nested task(s)</div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function handleSearch(e) {
+            const filter = e.target.value;
+            renderTree(filter);
+        }
     </script>
 </body>
 </html>
