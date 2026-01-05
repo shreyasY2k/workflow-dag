@@ -11,35 +11,84 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #fff;
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+            --accent-color: #0d6efd;
+            --accent-hover: #0b5ed7;
+            --hover-bg: #f8f9fa;
+            --active-bg: #e7f1ff;
+            --shadow: rgba(0,0,0,0.04);
+        }
+
+        body.dark-mode {
+            --bg-primary: #1a1d23;
+            --bg-secondary: #22262e;
+            --bg-tertiary: #2a2f3a;
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd;
+            --border-color: #343a40;
+            --accent-color: #4a9eff;
+            --accent-hover: #5aa7ff;
+            --hover-bg: #2a2f3a;
+            --active-bg: #2d3c54;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: #f8f9fa;
-            color: #212529;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
+            transition: background 0.3s, color 0.3s;
         }
 
         #header {
-            background: #fff;
-            border-bottom: 2px solid #e9ecef;
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border-color);
             padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 4px var(--shadow);
             z-index: 100;
         }
 
         #header h1 {
             font-size: 20px;
             font-weight: 600;
-            color: #212529;
+            color: var(--text-primary);
         }
 
         .workflow-info {
             font-size: 13px;
-            color: #6c757d;
+            color: var(--text-secondary);
             margin-top: 4px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
         }
 
         .file-input-wrapper {
@@ -56,7 +105,7 @@
         .file-input-wrapper label {
             display: inline-block;
             padding: 10px 20px;
-            background: #0d6efd;
+            background: var(--accent-color);
             color: white;
             border-radius: 6px;
             cursor: pointer;
@@ -66,7 +115,7 @@
         }
 
         .file-input-wrapper label:hover {
-            background: #0b5ed7;
+            background: var(--accent-hover);
         }
 
         #main-content {
@@ -76,23 +125,28 @@
 
         #sidebar {
             width: 400px;
-            background: #fff;
-            border-right: 1px solid #e9ecef;
+            min-width: 300px;
+            max-width: 600px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
             overflow-y: auto;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            resize: horizontal;
         }
 
         #detail-panel {
             flex: 1;
-            background: #f8f9fa;
+            background: var(--bg-primary);
             overflow-y: auto;
             padding: 24px;
         }
 
         .sidebar-header {
             padding: 16px 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 10;
@@ -101,7 +155,7 @@
         .sidebar-header h2 {
             font-size: 14px;
             font-weight: 600;
-            color: #495057;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -110,41 +164,45 @@
             margin-top: 12px;
             width: 100%;
             padding: 8px 12px;
-            border: 1px solid #dee2e6;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 13px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .search-box:focus {
             outline: none;
-            border-color: #0d6efd;
+            border-color: var(--accent-color);
         }
 
         .tree-item {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 1px solid #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
             transition: background 0.15s;
             user-select: none;
+            position: relative;
         }
 
         .tree-item:hover {
-            background: #f8f9fa;
+            background: var(--hover-bg);
         }
 
         .tree-item.active {
-            background: #e7f1ff;
-            border-left: 3px solid #0d6efd;
+            background: var(--active-bg);
+            border-left: 3px solid var(--accent-color);
         }
 
         .tree-item.has-children {
             font-weight: 500;
         }
 
-        .tree-item-header {
+        .tree-item-content {
             display: flex;
             align-items: center;
             gap: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            min-height: 44px;
         }
 
         .expand-icon {
@@ -153,9 +211,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            color: #6c757d;
+            font-size: 10px;
+            color: var(--text-secondary);
             transition: transform 0.2s;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .expand-icon:hover {
+            color: var(--accent-color);
         }
 
         .expand-icon.expanded {
@@ -168,6 +232,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: var(--text-primary);
         }
 
         .status-dot {
@@ -187,13 +252,13 @@
             font-size: 11px;
             padding: 2px 6px;
             border-radius: 3px;
-            background: #e9ecef;
-            color: #495057;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
             font-weight: 500;
+            flex-shrink: 0;
         }
 
         .tree-children {
-            margin-left: 24px;
             display: none;
         }
 
@@ -202,18 +267,19 @@
         }
 
         .detail-card {
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 8px;
             padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            box-shadow: 0 1px 3px var(--shadow);
             margin-bottom: 20px;
+            border: 1px solid var(--border-color);
         }
 
         .detail-card h2 {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #212529;
+            color: var(--text-primary);
             word-break: break-word;
         }
 
@@ -221,9 +287,9 @@
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 16px;
-            color: #495057;
+            color: var(--text-secondary);
             padding-bottom: 8px;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid var(--border-color);
         }
 
         .detail-grid {
@@ -242,14 +308,14 @@
         .detail-label {
             font-size: 12px;
             font-weight: 600;
-            color: #6c757d;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .detail-value {
             font-size: 14px;
-            color: #212529;
+            color: var(--text-primary);
             word-break: break-all;
         }
 
@@ -288,20 +354,21 @@
 
         .timeline-item {
             padding: 12px;
-            background: #f8f9fa;
+            background: var(--bg-tertiary);
             border-radius: 6px;
             margin-bottom: 8px;
             font-size: 13px;
+            color: var(--text-primary);
         }
 
         .timeline-item strong {
-            color: #495057;
+            color: var(--text-secondary);
         }
 
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #6c757d;
+            color: var(--text-secondary);
         }
 
         .empty-state svg {
@@ -314,7 +381,7 @@
         .empty-state h2 {
             font-size: 20px;
             margin-bottom: 8px;
-            color: #495057;
+            color: var(--text-secondary);
         }
 
         .empty-state p {
@@ -325,8 +392,8 @@
             display: flex;
             gap: 24px;
             padding: 16px 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
             font-size: 13px;
         }
 
@@ -337,27 +404,13 @@
         }
 
         .stat-label {
-            color: #6c757d;
+            color: var(--text-secondary);
             font-weight: 500;
         }
 
         .stat-value {
             font-weight: 600;
-            color: #212529;
-        }
-
-        .duration-bar {
-            height: 6px;
-            background: #e9ecef;
-            border-radius: 3px;
-            margin-top: 16px;
-            overflow: hidden;
-        }
-
-        .duration-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
-            border-radius: 3px;
+            color: var(--text-primary);
         }
 
         .sub-workflow-badge {
@@ -365,8 +418,8 @@
             align-items: center;
             gap: 4px;
             padding: 4px 8px;
-            background: #e7f1ff;
-            color: #0d6efd;
+            background: var(--active-bg);
+            color: var(--accent-color);
             border-radius: 4px;
             font-size: 11px;
             font-weight: 600;
@@ -374,14 +427,15 @@
         }
 
         .code-block {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 12px;
             font-family: 'Courier New', monospace;
             font-size: 12px;
             overflow-x: auto;
             margin-top: 8px;
+            color: var(--text-primary);
         }
 
         ::-webkit-scrollbar {
@@ -390,16 +444,16 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: var(--bg-tertiary);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
+            background: var(--text-secondary);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background: var(--text-primary);
         }
     </style>
 </head>
@@ -409,9 +463,12 @@
             <h1>Conductor Workflow Viewer</h1>
             <div class="workflow-info" id="workflowInfo"></div>
         </div>
-        <div class="file-input-wrapper">
-            <input type="file" id="fileInput" accept=".json">
-            <label for="fileInput">Load Workflow JSON</label>
+        <div class="header-controls">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌓</button>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".json">
+                <label for="fileInput">Load Workflow JSON</label>
+            </div>
         </div>
     </div>
 
@@ -455,6 +512,17 @@
         let allTasks = [];
         let expandedNodes = new Set();
         let selectedTask = null;
+
+        // Dark mode
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Load saved theme
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
 
         // Initialize
         document.getElementById('fileInput').addEventListener('change', handleFileUpload);
@@ -548,6 +616,8 @@
                 if (!hasMatchingChild) return null;
             }
 
+            const itemWrapper = document.createElement('div');
+            
             const item = document.createElement('div');
             item.className = 'tree-item';
             if (taskObj.children.length > 0) {
@@ -557,8 +627,9 @@
                 item.classList.add('active');
             }
 
-            const header = document.createElement('div');
-            header.className = 'tree-item-header';
+            const content = document.createElement('div');
+            content.className = 'tree-item-content';
+            content.style.paddingLeft = `${20 + taskObj.depth * 20}px`;
 
             // Expand icon
             if (taskObj.children.length > 0) {
@@ -572,42 +643,41 @@
                     e.stopPropagation();
                     toggleExpand(taskObj.id);
                 };
-                header.appendChild(expandIcon);
+                content.appendChild(expandIcon);
             } else {
                 const spacer = document.createElement('div');
                 spacer.style.width = '16px';
-                header.appendChild(spacer);
+                spacer.style.flexShrink = '0';
+                content.appendChild(spacer);
             }
 
             // Status dot
             const statusDot = document.createElement('div');
             statusDot.className = `status-dot status-${taskObj.status}`;
-            header.appendChild(statusDot);
+            content.appendChild(statusDot);
 
             // Task name
             const taskName = document.createElement('div');
             taskName.className = 'task-name';
             taskName.textContent = taskObj.name;
             taskName.title = taskObj.name;
-            header.appendChild(taskName);
+            content.appendChild(taskName);
 
             // Task type
             const taskType = document.createElement('span');
             taskType.className = 'task-type';
             taskType.textContent = taskObj.type;
-            header.appendChild(taskType);
+            content.appendChild(taskType);
 
-            item.appendChild(header);
+            item.appendChild(content);
 
-            // Add indent styling
-            item.style.paddingLeft = `${20 + taskObj.depth * 24}px`;
-
-            // Click handler
-            item.onclick = (e) => {
-                if (e.target === item || e.target === header || e.target === taskName) {
-                    selectTask(taskObj.id);
-                }
+            // Click handler for the entire content area
+            content.onclick = (e) => {
+                if (e.target.classList.contains('expand-icon')) return;
+                selectTask(taskObj.id);
             };
+
+            itemWrapper.appendChild(item);
 
             // Children
             if (taskObj.children.length > 0) {
@@ -622,10 +692,10 @@
                     if (childElement) childrenContainer.appendChild(childElement);
                 });
 
-                item.appendChild(childrenContainer);
+                itemWrapper.appendChild(childrenContainer);
             }
 
-            return item;
+            return itemWrapper;
         }
 
         function hasMatchingDescendant(taskObj, filter) {
