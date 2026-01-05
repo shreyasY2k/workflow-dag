@@ -593,38 +593,43 @@
 
         // Layout algorithm
         function layoutNodes() {
-            const levels = {};
+            // Track position for each depth level
+            const depthCounters = {};
             
-            // Group by depth
-            allNodes.forEach(node => {
-                if (!levels[node.depth]) levels[node.depth] = [];
-                levels[node.depth].push(node);
-            });
-
-            // Position nodes
-            Object.keys(levels).forEach(depth => {
-                const levelNodes = levels[depth];
-                const totalWidth = levelNodes.length * HORIZONTAL_SPACING;
-                const startX = -totalWidth / 2 + HORIZONTAL_SPACING / 2;
-
-                levelNodes.forEach((node, index) => {
-                    node.x = startX + index * HORIZONTAL_SPACING;
-                    node.y = PADDING + parseInt(depth) * VERTICAL_SPACING;
+            function assignPosition(node) {
+                const depth = node.depth;
+                if (!depthCounters[depth]) {
+                    depthCounters[depth] = 0;
+                }
+                
+                node.x = PADDING + depth * HORIZONTAL_SPACING;
+                node.y = PADDING + depthCounters[depth] * VERTICAL_SPACING;
+                
+                depthCounters[depth]++;
+                
+                // Process children
+                node.children.forEach(child => {
+                    assignPosition(child);
                 });
+            }
+            
+            // Start with root nodes (nodes without parents)
+            const rootNodes = allNodes.filter(n => n.parent === null);
+            rootNodes.forEach(node => {
+                assignPosition(node);
             });
 
             // Calculate SVG size
             const maxX = Math.max(...allNodes.map(n => n.x)) + NODE_WIDTH + PADDING;
-            const minX = Math.min(...allNodes.map(n => n.x)) - PADDING;
             const maxY = Math.max(...allNodes.map(n => n.y)) + NODE_HEIGHT + PADDING;
             
-            const width = Math.max(maxX - minX, 2000);
+            const width = Math.max(maxX, 2000);
             const height = Math.max(maxY, 1000);
             
             svg.setAttribute('width', width);
             svg.setAttribute('height', height);
             
-            viewBox = { x: minX, y: 0, width: width, height: height };
+            viewBox = { x: 0, y: 0, width: width, height: height };
         }
 
         // Get node color
@@ -658,13 +663,13 @@
                 if (!edge.from.visible || !edge.to.visible) return;
 
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                const fromX = edge.from.x + NODE_WIDTH / 2;
-                const fromY = edge.from.y + NODE_HEIGHT;
-                const toX = edge.to.x + NODE_WIDTH / 2;
-                const toY = edge.to.y;
+                const fromX = edge.from.x + NODE_WIDTH;
+                const fromY = edge.from.y + NODE_HEIGHT / 2;
+                const toX = edge.to.x;
+                const toY = edge.to.y + NODE_HEIGHT / 2;
                 
-                const midY = (fromY + toY) / 2;
-                const d = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
+                const midX = (fromX + toX) / 2;
+                const d = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
                 
                 path.setAttribute('d', d);
                 path.setAttribute('class', 'edge');
