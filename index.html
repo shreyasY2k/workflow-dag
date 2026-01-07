@@ -12,35 +12,43 @@
         }
 
         :root {
-            --bg-primary: #f8f9fa;
+            --bg-primary: #f5f7fa;
             --bg-secondary: #fff;
             --bg-tertiary: #f8f9fa;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --border-color: #e9ecef;
-            --accent-color: #0d6efd;
-            --accent-hover: #0b5ed7;
-            --hover-bg: #f8f9fa;
-            --active-bg: #e7f1ff;
-            --shadow: rgba(0,0,0,0.04);
+            --text-primary: #1a1a2e;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --hover-bg: #f3f4f6;
+            --active-bg: #eff6ff;
+            --shadow: rgba(0,0,0,0.06);
+            --shadow-lg: rgba(0,0,0,0.1);
+            --node-completed: #10b981;
+            --node-failed: #ef4444;
+            --node-running: #f59e0b;
+            --node-scheduled: #06b6d4;
+            --node-skipped: #9ca3af;
+            --node-canceled: #f97316;
         }
 
         body.dark-mode {
-            --bg-primary: #1a1d23;
-            --bg-secondary: #22262e;
-            --bg-tertiary: #2a2f3a;
-            --text-primary: #e9ecef;
-            --text-secondary: #adb5bd;
-            --border-color: #343a40;
-            --accent-color: #4a9eff;
-            --accent-hover: #5aa7ff;
-            --hover-bg: #2a2f3a;
-            --active-bg: #2d3c54;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #475569;
+            --accent-color: #60a5fa;
+            --accent-hover: #93c5fd;
+            --hover-bg: #334155;
+            --active-bg: #1e3a5f;
             --shadow: rgba(0,0,0,0.3);
+            --shadow-lg: rgba(0,0,0,0.4);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             height: 100vh;
@@ -48,88 +56,172 @@
             transition: background 0.3s, color 0.3s;
         }
 
+        /* Header */
         #header {
             background: var(--bg-secondary);
-            border-bottom: 2px solid var(--border-color);
-            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px var(--shadow);
+            box-shadow: 0 1px 3px var(--shadow);
             z-index: 100;
+            height: 60px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         #header h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .workflow-info {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 4px;
+        #header h1::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent-color), #8b5cf6);
+            border-radius: 6px;
         }
+
+        .workflow-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .workflow-badge .status {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .workflow-badge .status.COMPLETED { background: rgba(16,185,129,0.15); color: #10b981; }
+        .workflow-badge .status.FAILED { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .workflow-badge .status.RUNNING { background: rgba(245,158,11,0.15); color: #f59e0b; }
 
         .header-controls {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
         }
 
-        .theme-toggle {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 6px;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 18px;
             transition: all 0.2s;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
-        .theme-toggle:hover {
+        .btn:hover {
             background: var(--hover-bg);
+            border-color: var(--accent-color);
         }
 
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-input-wrapper label {
-            display: inline-block;
-            padding: 10px 20px;
+        .btn-primary {
             background: var(--accent-color);
             color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.2s;
+            border-color: var(--accent-color);
         }
 
-        .file-input-wrapper label:hover {
+        .btn-primary:hover {
             background: var(--accent-hover);
         }
 
+        .file-input {
+            display: none;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border: none;
+            background: none;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* Main Content */
         #main-content {
             display: flex;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 102px);
+        }
+
+        .tab-panel {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tab-panel.active {
+            display: flex;
+        }
+
+        /* Tree Panel */
+        #tree-panel {
+            display: flex;
         }
 
         #sidebar {
-            width: 400px;
-            min-width: 300px;
+            width: 420px;
+            min-width: 320px;
             max-width: 600px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border-color);
-            overflow-y: auto;
+            overflow: hidden;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
@@ -145,42 +237,75 @@
 
         .sidebar-header {
             padding: 16px 20px;
-            background: var(--bg-tertiary);
+            background: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
 
         .sidebar-header h2 {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            margin-bottom: 12px;
         }
 
         .search-box {
-            margin-top: 12px;
             width: 100%;
-            padding: 8px 12px;
+            padding: 10px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 13px;
-            background: var(--bg-secondary);
+            background: var(--bg-tertiary);
             color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .search-box:focus {
             outline: none;
             border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            padding: 12px 20px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 12px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        #tree-container {
+            flex: 1;
+            overflow-y: auto;
         }
 
         .tree-item {
             border-bottom: 1px solid var(--border-color);
             transition: background 0.15s;
             user-select: none;
-            position: relative;
         }
 
         .tree-item:hover {
@@ -189,25 +314,25 @@
 
         .tree-item.active {
             background: var(--active-bg);
-            border-left: 3px solid var(--accent-color);
         }
 
-        .tree-item.has-children {
-            font-weight: 500;
+        .tree-item.active .tree-item-content {
+            border-left: 3px solid var(--accent-color);
         }
 
         .tree-item-content {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
+            padding: 10px 16px;
             cursor: pointer;
             min-height: 44px;
+            border-left: 3px solid transparent;
         }
 
         .expand-icon {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -216,9 +341,11 @@
             transition: transform 0.2s;
             cursor: pointer;
             flex-shrink: 0;
+            border-radius: 4px;
         }
 
         .expand-icon:hover {
+            background: var(--hover-bg);
             color: var(--accent-color);
         }
 
@@ -235,27 +362,29 @@
             color: var(--text-primary);
         }
 
-        .status-dot {
+        .status-indicator {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             flex-shrink: 0;
         }
 
-        .status-COMPLETED { background: #28a745; }
-        .status-FAILED { background: #dc3545; }
-        .status-RUNNING { background: #ffc107; }
-        .status-SCHEDULED { background: #17a2b8; }
-        .status-SKIPPED { background: #6c757d; }
+        .status-COMPLETED { background: var(--node-completed); }
+        .status-FAILED { background: var(--node-failed); }
+        .status-RUNNING { background: var(--node-running); }
+        .status-SCHEDULED { background: var(--node-scheduled); }
+        .status-SKIPPED { background: var(--node-skipped); }
+        .status-CANCELED { background: var(--node-canceled); }
 
-        .task-type {
-            font-size: 11px;
+        .task-type-badge {
+            font-size: 10px;
             padding: 2px 6px;
-            border-radius: 3px;
+            border-radius: 4px;
             background: var(--bg-tertiary);
             color: var(--text-secondary);
             font-weight: 500;
             flex-shrink: 0;
+            text-transform: uppercase;
         }
 
         .tree-children {
@@ -266,37 +395,67 @@
             display: block;
         }
 
+        /* Detail Panel */
         .detail-card {
             background: var(--bg-secondary);
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 24px;
             box-shadow: 0 1px 3px var(--shadow);
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
         }
 
-        .detail-card h2 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            word-break: break-word;
+        .detail-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
 
-        .detail-card h3 {
-            font-size: 16px;
+        .detail-header h2 {
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 16px;
+            color: var(--text-primary);
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .status-badge.COMPLETED { background: rgba(16,185,129,0.15); color: #10b981; }
+        .status-badge.FAILED { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .status-badge.RUNNING { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .status-badge.SCHEDULED { background: rgba(6,182,212,0.15); color: #06b6d4; }
+        .status-badge.CANCELED { background: rgba(249,115,22,0.15); color: #f97316; }
+
+        .detail-section {
+            margin-top: 24px;
+        }
+
+        .detail-section h3 {
+            font-size: 12px;
+            font-weight: 600;
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
             padding-bottom: 8px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .detail-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
-            margin-top: 16px;
         }
 
         .detail-item {
@@ -306,138 +465,404 @@
         }
 
         .detail-label {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 500;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         .detail-value {
             font-size: 14px;
             color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .detail-value.mono {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 12px;
+            background: var(--bg-tertiary);
+            padding: 8px 10px;
+            border-radius: 6px;
             word-break: break-all;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
+        .sub-workflow-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--active-bg);
+            color: var(--accent-color);
             border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .status-badge.COMPLETED {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-badge.FAILED {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-badge.RUNNING {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-badge.SCHEDULED {
-            background: #d1ecf1;
-            color: #0c5460;
+        .sub-workflow-link:hover {
+            background: rgba(59,130,246,0.2);
         }
 
         .timeline {
-            margin-top: 24px;
+            margin-top: 12px;
         }
 
         .timeline-item {
-            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
             background: var(--bg-tertiary);
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 8px;
             font-size: 13px;
+        }
+
+        .timeline-item-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .timeline-item-icon.start { background: rgba(16,185,129,0.15); color: #10b981; }
+        .timeline-item-icon.end { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .timeline-item-icon.update { background: rgba(59,130,246,0.15); color: #3b82f6; }
+
+        .timeline-item-content {
+            flex: 1;
+        }
+
+        .timeline-item-label {
+            font-weight: 500;
             color: var(--text-primary);
         }
 
-        .timeline-item strong {
+        .timeline-item-time {
+            font-size: 12px;
             color: var(--text-secondary);
+            font-family: 'SF Mono', monospace;
         }
 
         .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px;
             color: var(--text-secondary);
         }
 
-        .empty-state svg {
+        .empty-state-icon {
             width: 80px;
             height: 80px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
             margin-bottom: 20px;
-            opacity: 0.3;
+            opacity: 0.6;
         }
 
         .empty-state h2 {
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: 600;
             margin-bottom: 8px;
-            color: var(--text-secondary);
+            color: var(--text-primary);
         }
 
         .empty-state p {
             font-size: 14px;
+            max-width: 300px;
         }
 
-        .stats-bar {
+        /* Graph Panel */
+        #graph-panel {
+            position: relative;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        #graph-container {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            position: relative;
+        }
+
+        #graph-container.grabbing {
+            cursor: grabbing;
+        }
+
+        #graph-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .graph-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
             display: flex;
-            gap: 24px;
-            padding: 16px 20px;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border-color);
-            font-size: 13px;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
         }
 
-        .stat {
+        .graph-control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .graph-control-btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-color);
+        }
+
+        .graph-legend {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            z-index: 10;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .graph-minimap {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 180px;
+            height: 120px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            z-index: 10;
+        }
+
+        .minimap-viewport {
+            position: absolute;
+            border: 2px solid var(--accent-color);
+            background: rgba(59,130,246,0.1);
+            pointer-events: none;
+        }
+
+        /* Timeline Panel */
+        #timeline-panel {
+            flex-direction: column;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .timeline-header {
+            padding: 16px 24px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .timeline-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .timeline-container {
+            flex: 1;
+            overflow: auto;
+            padding: 24px;
+        }
+
+        .timeline-scale {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timeline-scale-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-right: 16px;
+        }
+
+        .timeline-scale-marks {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            height: 24px;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .timeline-scale-mark {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: center;
+            position: relative;
+            padding-top: 8px;
+        }
+
+        .timeline-scale-mark::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 6px;
+            background: var(--border-color);
+        }
+
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .gantt-label {
+            width: 280px;
+            min-width: 280px;
+            padding-right: 16px;
+            font-size: 12px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .stat-label {
+        .gantt-label .status-indicator {
+            flex-shrink: 0;
+        }
+
+        .gantt-bar-container {
+            flex: 1;
+            height: 28px;
+            position: relative;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .gantt-bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 4px;
+            min-width: 4px;
+            cursor: pointer;
+            transition: filter 0.2s;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 10px;
+            color: white;
+            font-weight: 500;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .gantt-bar:hover {
+            filter: brightness(1.1);
+        }
+
+        .gantt-bar.COMPLETED { background: linear-gradient(135deg, #10b981, #059669); }
+        .gantt-bar.FAILED { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .gantt-bar.RUNNING { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .gantt-bar.SCHEDULED { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .gantt-bar.CANCELED { background: linear-gradient(135deg, #f97316, #ea580c); }
+
+        .gantt-tooltip {
+            position: fixed;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            box-shadow: 0 4px 12px var(--shadow-lg);
+            z-index: 1000;
+            pointer-events: none;
+            max-width: 300px;
+        }
+
+        .gantt-tooltip-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .gantt-tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        .gantt-tooltip-label {
             color: var(--text-secondary);
+        }
+
+        .gantt-tooltip-value {
+            color: var(--text-primary);
             font-weight: 500;
         }
 
-        .stat-value {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .sub-workflow-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            background: var(--active-bg);
-            color: var(--accent-color);
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .code-block {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            overflow-x: auto;
-            margin-top: 8px;
-            color: var(--text-primary);
-        }
-
+        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -455,78 +880,284 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-primary);
         }
+
+        /* Loading Animation */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Node styles for graph */
+        .graph-node {
+            position: absolute;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            min-width: 180px;
+            max-width: 240px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .graph-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-lg);
+        }
+
+        .graph-node.collapsed .node-children-indicator {
+            display: flex;
+        }
+
+        .graph-node.COMPLETED { border-color: var(--node-completed); }
+        .graph-node.FAILED { border-color: var(--node-failed); }
+        .graph-node.RUNNING { border-color: var(--node-running); }
+        .graph-node.SCHEDULED { border-color: var(--node-scheduled); }
+        .graph-node.CANCELED { border-color: var(--node-canceled); }
+
+        .node-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .node-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .node-type {
+            font-size: 10px;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .node-duration {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .node-expand-btn {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .node-expand-btn:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .node-children-indicator {
+            display: none;
+            position: absolute;
+            top: 50%;
+            right: -8px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
     <div id="header">
-        <div>
-            <h1>Conductor Workflow Viewer</h1>
-            <div class="workflow-info" id="workflowInfo"></div>
-        </div>
-        <div class="header-controls">
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌓</button>
-            <div class="file-input-wrapper">
-                <input type="file" id="fileInput" accept=".json">
-                <label for="fileInput">Load Workflow JSON</label>
+        <div class="header-left">
+            <h1>Workflow Viewer</h1>
+            <div class="workflow-badge" id="workflowBadge" style="display: none;">
+                <span id="workflowName"></span>
+                <span class="status" id="workflowStatus"></span>
             </div>
         </div>
+        <div class="header-controls">
+            <button class="btn" onclick="toggleTheme()" title="Toggle Theme">🌓</button>
+            <input type="file" class="file-input" id="fileInput" accept=".json">
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                📂 Load JSON
+            </button>
+        </div>
+    </div>
+
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="tree">📋 Tree View</button>
+        <button class="tab-btn" data-tab="graph">🔀 Graph View</button>
+        <button class="tab-btn" data-tab="timeline">📊 Timeline</button>
     </div>
 
     <div id="main-content">
-        <div id="sidebar">
-            <div class="sidebar-header">
-                <h2>Task Hierarchy</h2>
-                <input type="text" class="search-box" id="searchBox" placeholder="Search tasks...">
+        <!-- Tree Panel -->
+        <div id="tree-panel" class="tab-panel active">
+            <div id="sidebar">
+                <div class="sidebar-header">
+                    <h2>Task Hierarchy</h2>
+                    <input type="text" class="search-box" id="searchBox" placeholder="Search tasks...">
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-dot" style="background: var(--text-secondary);"></div>
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value" id="totalTasks">0</span>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-dot" style="background: var(--node-completed);"></div>
+                        <span class="stat-label">Done</span>
+                        <span class="stat-value" id="completedTasks">0</span>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-dot" style="background: var(--node-failed);"></div>
+                        <span class="stat-label">Failed</span>
+                        <span class="stat-value" id="failedTasks">0</span>
+                    </div>
+                </div>
+                <div id="tree-container"></div>
             </div>
-            <div class="stats-bar">
-                <div class="stat">
-                    <span class="stat-label">Total:</span>
-                    <span class="stat-value" id="totalTasks">0</span>
+            <div id="detail-panel">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">📋</div>
+                    <h2>Select a task</h2>
+                    <p>Click on any task in the tree to view its details and timeline</p>
                 </div>
-                <div class="stat">
-                    <span class="stat-label">Completed:</span>
-                    <span class="stat-value" id="completedTasks">0</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">Failed:</span>
-                    <span class="stat-value" id="failedTasks">0</span>
-                </div>
+                <div id="detailContent"></div>
             </div>
-            <div id="tree-container"></div>
         </div>
 
-        <div id="detail-panel">
-            <div class="empty-state" id="emptyState">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                <h2>Select a task to view details</h2>
-                <p>Click on any task in the tree to see its information</p>
+        <!-- Graph Panel -->
+        <div id="graph-panel" class="tab-panel">
+            <div id="graph-container">
+                <canvas id="graph-canvas"></canvas>
+                <div id="graph-nodes"></div>
             </div>
-            <div id="detailContent"></div>
+            <div class="graph-controls">
+                <button class="graph-control-btn" onclick="zoomIn()" title="Zoom In">+</button>
+                <button class="graph-control-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+                <button class="graph-control-btn" onclick="resetView()" title="Reset View">⟲</button>
+                <button class="graph-control-btn" onclick="fitToScreen()" title="Fit to Screen">⛶</button>
+                <button class="graph-control-btn" onclick="expandAll()" title="Expand All">⊞</button>
+                <button class="graph-control-btn" onclick="collapseAll()" title="Collapse All">⊟</button>
+            </div>
+            <div class="graph-legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: var(--node-completed);"></div>
+                    <span>Completed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: var(--node-failed);"></div>
+                    <span>Failed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: var(--node-running);"></div>
+                    <span>Running</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: var(--node-canceled);"></div>
+                    <span>Canceled</span>
+                </div>
+            </div>
+            <div class="graph-minimap" id="minimap">
+                <canvas id="minimap-canvas"></canvas>
+                <div class="minimap-viewport" id="minimap-viewport"></div>
+            </div>
+        </div>
+
+        <!-- Timeline Panel -->
+        <div id="timeline-panel" class="tab-panel">
+            <div class="timeline-header">
+                <h2>Workflow Timeline (Gantt Chart)</h2>
+                <div class="timeline-info" id="timelineInfo"></div>
+            </div>
+            <div class="timeline-container" id="timeline-container"></div>
         </div>
     </div>
 
+    <div class="gantt-tooltip" id="ganttTooltip" style="display: none;"></div>
+
     <script>
+        // ==================== State ====================
         let workflowData = null;
         let allTasks = [];
+        let taskMap = new Map();
         let expandedNodes = new Set();
         let selectedTask = null;
 
-        // Dark mode
+        // Graph state
+        let graphScale = 1;
+        let graphOffsetX = 0;
+        let graphOffsetY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let graphNodes = [];
+        let collapsedGraphNodes = new Set();
+
+        // ==================== Theme ====================
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            if (workflowData) {
+                renderGraph();
+                renderTimeline();
+            }
         }
 
-        // Load saved theme
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
         }
 
-        // Initialize
+        // ==================== Tab Navigation ====================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                const tabId = btn.dataset.tab + '-panel';
+                document.getElementById(tabId).classList.add('active');
+                
+                if (btn.dataset.tab === 'graph' && workflowData) {
+                    setTimeout(() => renderGraph(), 100);
+                }
+                if (btn.dataset.tab === 'timeline' && workflowData) {
+                    renderTimeline();
+                }
+            });
+        });
+
+        // ==================== File Upload ====================
         document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-        document.getElementById('searchBox').addEventListener('input', handleSearch);
 
         function handleFileUpload(e) {
             const file = e.target.files[0];
@@ -544,23 +1175,30 @@
             reader.readAsText(file);
         }
 
+        // ==================== Data Parsing ====================
         function loadWorkflow(data) {
-            // Update header info
-            const info = document.getElementById('workflowInfo');
-            info.textContent = `${data.workflowName} v${data.workflowVersion} • ${data.status}`;
+            // Update header
+            document.getElementById('workflowBadge').style.display = 'flex';
+            document.getElementById('workflowName').textContent = `${data.workflowName} v${data.workflowVersion}`;
+            document.getElementById('workflowStatus').textContent = data.status;
+            document.getElementById('workflowStatus').className = `status ${data.status}`;
 
             // Parse tasks
             allTasks = [];
-            parseTasks(data.tasks, null, 0);
+            taskMap.clear();
+            parseTasks(data.tasks, null, 0, null);
 
             // Update stats
             updateStats();
 
-            // Render tree
+            // Render views
             renderTree();
+            
+            // Auto-expand failed paths
+            expandFailedPaths();
         }
 
-        function parseTasks(tasks, parent, depth) {
+        function parseTasks(tasks, parent, depth, parentWorkflow) {
             if (!tasks || tasks.length === 0) return;
 
             tasks.forEach((task, index) => {
@@ -572,10 +1210,14 @@
                     children: [],
                     name: task.referenceTaskName || task.taskReferenceName || task.name || 'Unnamed Task',
                     type: task.taskType || 'SIMPLE',
-                    status: task.status || 'N/A'
+                    status: task.status || 'N/A',
+                    startTime: task.startTime ? new Date(task.startTime) : null,
+                    endTime: task.endTime ? new Date(task.endTime) : null,
+                    workflowName: parentWorkflow
                 };
 
                 allTasks.push(taskObj);
+                taskMap.set(taskObj.id, taskObj);
 
                 if (parent) {
                     parent.children.push(taskObj);
@@ -583,19 +1225,40 @@
 
                 // Parse sub-workflows
                 if (task.subWorkflow && task.subWorkflow.tasks) {
-                    parseTasks(task.subWorkflow.tasks, taskObj, depth + 1);
+                    const subWorkflowName = task.subWorkflow.workflowName || task.subWorkflowId;
+                    parseTasks(task.subWorkflow.tasks, taskObj, depth + 1, subWorkflowName);
                 }
             });
+        }
+
+        function expandFailedPaths() {
+            allTasks.forEach(task => {
+                if (task.status === 'FAILED' || task.status === 'CANCELED') {
+                    let current = task.parent;
+                    while (current) {
+                        expandedNodes.add(current.id);
+                        current = current.parent;
+                    }
+                }
+            });
+            renderTree();
         }
 
         function updateStats() {
             const total = allTasks.length;
             const completed = allTasks.filter(t => t.status === 'COMPLETED').length;
-            const failed = allTasks.filter(t => t.status === 'FAILED').length;
+            const failed = allTasks.filter(t => t.status === 'FAILED' || t.status === 'CANCELED').length;
 
             document.getElementById('totalTasks').textContent = total;
             document.getElementById('completedTasks').textContent = completed;
             document.getElementById('failedTasks').textContent = failed;
+        }
+
+        // ==================== Tree View ====================
+        document.getElementById('searchBox').addEventListener('input', handleSearch);
+
+        function handleSearch(e) {
+            renderTree(e.target.value);
         }
 
         function renderTree(filter = '') {
@@ -610,35 +1273,27 @@
         }
 
         function createTreeItem(taskObj, filter) {
-            // Filter check
-            if (filter && !taskObj.name.toLowerCase().includes(filter.toLowerCase())) {
-                const hasMatchingChild = hasMatchingDescendant(taskObj, filter);
-                if (!hasMatchingChild) return null;
-            }
+            const matchesFilter = !filter || taskObj.name.toLowerCase().includes(filter.toLowerCase());
+            const hasMatchingChild = hasMatchingDescendant(taskObj, filter);
 
-            const itemWrapper = document.createElement('div');
-            
+            if (filter && !matchesFilter && !hasMatchingChild) return null;
+
+            const wrapper = document.createElement('div');
+
             const item = document.createElement('div');
             item.className = 'tree-item';
-            if (taskObj.children.length > 0) {
-                item.classList.add('has-children');
-            }
-            if (selectedTask === taskObj.id) {
-                item.classList.add('active');
-            }
+            if (selectedTask === taskObj.id) item.classList.add('active');
 
             const content = document.createElement('div');
             content.className = 'tree-item-content';
-            content.style.paddingLeft = `${20 + taskObj.depth * 20}px`;
+            content.style.paddingLeft = `${16 + taskObj.depth * 20}px`;
 
             // Expand icon
             if (taskObj.children.length > 0) {
                 const expandIcon = document.createElement('div');
                 expandIcon.className = 'expand-icon';
-                if (expandedNodes.has(taskObj.id)) {
-                    expandIcon.classList.add('expanded');
-                }
-                expandIcon.textContent = '▶';
+                if (expandedNodes.has(taskObj.id)) expandIcon.classList.add('expanded');
+                expandIcon.innerHTML = '▶';
                 expandIcon.onclick = (e) => {
                     e.stopPropagation();
                     toggleExpand(taskObj.id);
@@ -646,14 +1301,14 @@
                 content.appendChild(expandIcon);
             } else {
                 const spacer = document.createElement('div');
-                spacer.style.width = '16px';
+                spacer.style.width = '20px';
                 spacer.style.flexShrink = '0';
                 content.appendChild(spacer);
             }
 
-            // Status dot
+            // Status indicator
             const statusDot = document.createElement('div');
-            statusDot.className = `status-dot status-${taskObj.status}`;
+            statusDot.className = `status-indicator status-${taskObj.status}`;
             content.appendChild(statusDot);
 
             // Task name
@@ -663,49 +1318,41 @@
             taskName.title = taskObj.name;
             content.appendChild(taskName);
 
-            // Task type
+            // Task type badge
             const taskType = document.createElement('span');
-            taskType.className = 'task-type';
+            taskType.className = 'task-type-badge';
             taskType.textContent = taskObj.type;
             content.appendChild(taskType);
 
             item.appendChild(content);
-
-            // Click handler for the entire content area
             content.onclick = (e) => {
                 if (e.target.classList.contains('expand-icon')) return;
                 selectTask(taskObj.id);
             };
 
-            itemWrapper.appendChild(item);
+            wrapper.appendChild(item);
 
             // Children
             if (taskObj.children.length > 0) {
                 const childrenContainer = document.createElement('div');
                 childrenContainer.className = 'tree-children';
-                if (expandedNodes.has(taskObj.id)) {
-                    childrenContainer.classList.add('expanded');
-                }
+                if (expandedNodes.has(taskObj.id)) childrenContainer.classList.add('expanded');
 
                 taskObj.children.forEach(child => {
                     const childElement = createTreeItem(child, filter);
                     if (childElement) childrenContainer.appendChild(childElement);
                 });
 
-                itemWrapper.appendChild(childrenContainer);
+                wrapper.appendChild(childrenContainer);
             }
 
-            return itemWrapper;
+            return wrapper;
         }
 
         function hasMatchingDescendant(taskObj, filter) {
             for (const child of taskObj.children) {
-                if (child.name.toLowerCase().includes(filter.toLowerCase())) {
-                    return true;
-                }
-                if (hasMatchingDescendant(child, filter)) {
-                    return true;
-                }
+                if (child.name.toLowerCase().includes(filter.toLowerCase())) return true;
+                if (hasMatchingDescendant(child, filter)) return true;
             }
             return false;
         }
@@ -728,85 +1375,699 @@
         function showTaskDetail(taskObj) {
             document.getElementById('emptyState').style.display = 'none';
             const container = document.getElementById('detailContent');
-            
+
             const task = taskObj.task;
-            const duration = task.startTime && task.endTime 
-                ? ((new Date(task.endTime) - new Date(task.startTime)) / 1000).toFixed(2)
+            const duration = taskObj.startTime && taskObj.endTime
+                ? formatDuration(taskObj.endTime - taskObj.startTime)
                 : 'N/A';
 
             container.innerHTML = `
                 <div class="detail-card">
-                    <h2>${taskObj.name}</h2>
-                    <span class="status-badge ${taskObj.status}">${taskObj.status}</span>
-                    ${task.subWorkflowId ? `<div class="sub-workflow-badge">📦 Sub-Workflow: ${task.subWorkflow?.workflowName || 'Unknown'}</div>` : ''}
-                    
-                    <h3 style="margin-top: 24px;">Task Information</h3>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <div class="detail-label">Task Type</div>
-                            <div class="detail-value">${taskObj.type}</div>
+                    <div class="detail-header">
+                        <div>
+                            <h2>${taskObj.name}</h2>
+                            ${taskObj.workflowName ? `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">In: ${taskObj.workflowName}</div>` : ''}
                         </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Duration</div>
-                            <div class="detail-value">${duration}s</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Retry Count</div>
-                            <div class="detail-value">${task.retryCount || 0}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Poll Count</div>
-                            <div class="detail-value">${task.pollCount || 0}</div>
+                        <span class="status-badge ${taskObj.status}">${taskObj.status}</span>
+                    </div>
+
+                    ${task.subWorkflowId ? `
+                    <div class="sub-workflow-link" onclick="navigateToSubWorkflow('${task.subWorkflowId}')">
+                        📦 Sub-Workflow: ${task.subWorkflow?.workflowName || 'Unknown'} (${taskObj.children.length} tasks)
+                    </div>
+                    ` : ''}
+
+                    <div class="detail-section">
+                        <h3>Task Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">${taskObj.type}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Duration</div>
+                                <div class="detail-value">${duration}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Retry Count</div>
+                                <div class="detail-value">${task.retryCount || 0}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Poll Count</div>
+                                <div class="detail-value">${task.pollCount || 0}</div>
+                            </div>
                         </div>
                     </div>
 
                     ${task.taskId ? `
-                    <h3 style="margin-top: 24px;">Identifiers</h3>
-                    <div class="detail-grid">
+                    <div class="detail-section">
+                        <h3>Identifiers</h3>
                         <div class="detail-item">
                             <div class="detail-label">Task ID</div>
-                            <div class="detail-value code-block">${task.taskId}</div>
+                            <div class="detail-value mono">${task.taskId}</div>
                         </div>
                         ${task.subWorkflowId ? `
-                        <div class="detail-item">
+                        <div class="detail-item" style="margin-top: 12px;">
                             <div class="detail-label">Sub-Workflow ID</div>
-                            <div class="detail-value code-block">${task.subWorkflowId}</div>
+                            <div class="detail-value mono">${task.subWorkflowId}</div>
                         </div>
                         ` : ''}
                     </div>
                     ` : ''}
 
-                    ${task.startTime ? `
-                    <h3 style="margin-top: 24px;">Timeline</h3>
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <strong>Start:</strong> ${new Date(task.startTime).toLocaleString()}
+                    ${taskObj.startTime ? `
+                    <div class="detail-section">
+                        <h3>Timeline</h3>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-item-icon start">▶</div>
+                                <div class="timeline-item-content">
+                                    <div class="timeline-item-label">Started</div>
+                                    <div class="timeline-item-time">${formatDateTime(taskObj.startTime)}</div>
+                                </div>
+                            </div>
+                            ${taskObj.endTime ? `
+                            <div class="timeline-item">
+                                <div class="timeline-item-icon end">■</div>
+                                <div class="timeline-item-content">
+                                    <div class="timeline-item-label">Ended</div>
+                                    <div class="timeline-item-time">${formatDateTime(taskObj.endTime)}</div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${task.updateTime ? `
+                            <div class="timeline-item">
+                                <div class="timeline-item-icon update">↻</div>
+                                <div class="timeline-item-content">
+                                    <div class="timeline-item-label">Last Updated</div>
+                                    <div class="timeline-item-time">${formatDateTime(new Date(task.updateTime))}</div>
+                                </div>
+                            </div>
+                            ` : ''}
                         </div>
-                        ${task.endTime ? `
-                        <div class="timeline-item">
-                            <strong>End:</strong> ${new Date(task.endTime).toLocaleString()}
-                        </div>
-                        ` : ''}
-                        ${task.updateTime ? `
-                        <div class="timeline-item">
-                            <strong>Updated:</strong> ${new Date(task.updateTime).toLocaleString()}
-                        </div>
-                        ` : ''}
                     </div>
                     ` : ''}
 
                     ${taskObj.children.length > 0 ? `
-                    <h3 style="margin-top: 24px;">Sub-Tasks</h3>
-                    <div class="detail-value">${taskObj.children.length} nested task(s)</div>
+                    <div class="detail-section">
+                        <h3>Child Tasks (${taskObj.children.length})</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                            ${taskObj.children.slice(0, 10).map(child => `
+                                <div style="display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; cursor: pointer;" onclick="selectTask(${child.id})">
+                                    <div class="status-indicator status-${child.status}"></div>
+                                    <span>${truncate(child.name, 25)}</span>
+                                </div>
+                            `).join('')}
+                            ${taskObj.children.length > 10 ? `<div style="padding: 6px 10px; font-size: 12px; color: var(--text-secondary);">+${taskObj.children.length - 10} more</div>` : ''}
+                        </div>
+                    </div>
                     ` : ''}
                 </div>
             `;
         }
 
-        function handleSearch(e) {
-            const filter = e.target.value;
-            renderTree(filter);
+        function navigateToSubWorkflow(subWorkflowId) {
+            const task = allTasks.find(t => t.task.subWorkflowId === subWorkflowId);
+            if (task && task.children.length > 0) {
+                expandedNodes.add(task.id);
+                selectTask(task.children[0].id);
+            }
         }
+
+        // ==================== Graph View ====================
+        function renderGraph() {
+            const container = document.getElementById('graph-container');
+            const nodesContainer = document.getElementById('graph-nodes');
+            const canvas = document.getElementById('graph-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            // Clear
+            nodesContainer.innerHTML = '';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!workflowData || allTasks.length === 0) return;
+
+            // Calculate node positions
+            graphNodes = [];
+            const rootTasks = allTasks.filter(t => t.parent === null);
+            let yOffset = 50;
+            
+            rootTasks.forEach(task => {
+                yOffset = layoutNode(task, 50, yOffset, 0);
+                yOffset += 30;
+            });
+
+            // Draw edges
+            drawEdges(ctx);
+
+            // Draw nodes
+            graphNodes.forEach(node => {
+                if (!isNodeVisible(node)) return;
+                createGraphNode(nodesContainer, node);
+            });
+
+            // Update minimap
+            updateMinimap();
+        }
+
+        function layoutNode(taskObj, x, y, level) {
+            const nodeWidth = 200;
+            const nodeHeight = 60;
+            const horizontalGap = 60;
+            const verticalGap = 20;
+
+            const isCollapsed = collapsedGraphNodes.has(taskObj.id);
+            
+            const node = {
+                id: taskObj.id,
+                task: taskObj,
+                x: x + (level * (nodeWidth + horizontalGap)),
+                y: y,
+                width: nodeWidth,
+                height: nodeHeight,
+                collapsed: isCollapsed,
+                childCount: taskObj.children.length
+            };
+
+            graphNodes.push(node);
+
+            if (!isCollapsed && taskObj.children.length > 0) {
+                let childY = y;
+                taskObj.children.forEach((child, index) => {
+                    childY = layoutNode(child, x, childY, level + 1);
+                    if (index < taskObj.children.length - 1) {
+                        childY += verticalGap;
+                    }
+                });
+                return Math.max(y + nodeHeight, childY);
+            }
+
+            return y + nodeHeight;
+        }
+
+        function isNodeVisible(node) {
+            let parent = node.task.parent;
+            while (parent) {
+                if (collapsedGraphNodes.has(parent.id)) return false;
+                parent = parent.parent;
+            }
+            return true;
+        }
+
+        function drawEdges(ctx) {
+            ctx.save();
+            ctx.translate(graphOffsetX, graphOffsetY);
+            ctx.scale(graphScale, graphScale);
+
+            const isDark = document.body.classList.contains('dark-mode');
+            ctx.strokeStyle = isDark ? '#475569' : '#d1d5db';
+            ctx.lineWidth = 2;
+
+            graphNodes.forEach(node => {
+                if (!isNodeVisible(node)) return;
+                
+                const task = node.task;
+                if (task.children.length > 0 && !node.collapsed) {
+                    task.children.forEach(child => {
+                        const childNode = graphNodes.find(n => n.id === child.id);
+                        if (childNode && isNodeVisible(childNode)) {
+                            drawEdge(ctx, node, childNode);
+                        }
+                    });
+                }
+            });
+
+            ctx.restore();
+        }
+
+        function drawEdge(ctx, fromNode, toNode) {
+            const startX = fromNode.x + fromNode.width;
+            const startY = fromNode.y + fromNode.height / 2;
+            const endX = toNode.x;
+            const endY = toNode.y + toNode.height / 2;
+
+            const controlOffset = 30;
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.bezierCurveTo(
+                startX + controlOffset, startY,
+                endX - controlOffset, endY,
+                endX, endY
+            );
+            ctx.stroke();
+
+            // Arrow
+            const arrowSize = 6;
+            const angle = Math.atan2(endY - (endY), endX - (endX - controlOffset));
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - arrowSize * Math.cos(angle - Math.PI / 6), endY - arrowSize * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(endX - arrowSize * Math.cos(angle + Math.PI / 6), endY - arrowSize * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
+        }
+
+        function createGraphNode(container, node) {
+            const div = document.createElement('div');
+            div.className = `graph-node ${node.task.status}`;
+            if (node.collapsed) div.classList.add('collapsed');
+            
+            div.style.left = `${(node.x * graphScale) + graphOffsetX}px`;
+            div.style.top = `${(node.y * graphScale) + graphOffsetY}px`;
+            div.style.transform = `scale(${graphScale})`;
+            div.style.transformOrigin = 'top left';
+
+            const duration = node.task.startTime && node.task.endTime
+                ? formatDuration(node.task.endTime - node.task.startTime)
+                : '';
+
+            div.innerHTML = `
+                <div class="node-header">
+                    <div class="status-indicator status-${node.task.status}"></div>
+                    <div class="node-title" title="${node.task.name}">${truncate(node.task.name, 22)}</div>
+                </div>
+                <div class="node-type">${node.task.type}</div>
+                ${duration ? `<div class="node-duration">${duration}</div>` : ''}
+                ${node.childCount > 0 ? `<div class="node-children-indicator">${node.childCount}</div>` : ''}
+            `;
+
+            if (node.childCount > 0) {
+                const expandBtn = document.createElement('div');
+                expandBtn.className = 'node-expand-btn';
+                expandBtn.innerHTML = node.collapsed ? '+' : '−';
+                expandBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleGraphNode(node.id);
+                };
+                div.appendChild(expandBtn);
+            }
+
+            div.onclick = () => {
+                selectedTask = node.id;
+                document.querySelector('.tab-btn[data-tab="tree"]').click();
+                setTimeout(() => {
+                    expandToTask(node.id);
+                    selectTask(node.id);
+                }, 100);
+            };
+
+            container.appendChild(div);
+        }
+
+        function toggleGraphNode(nodeId) {
+            if (collapsedGraphNodes.has(nodeId)) {
+                collapsedGraphNodes.delete(nodeId);
+            } else {
+                collapsedGraphNodes.add(nodeId);
+            }
+            renderGraph();
+        }
+
+        function expandToTask(taskId) {
+            const task = allTasks[taskId];
+            let parent = task.parent;
+            while (parent) {
+                expandedNodes.add(parent.id);
+                parent = parent.parent;
+            }
+        }
+
+        // Graph controls
+        const graphContainer = document.getElementById('graph-container');
+        
+        graphContainer.addEventListener('mousedown', (e) => {
+            if (e.target === graphContainer || e.target.tagName === 'CANVAS') {
+                isDragging = true;
+                dragStartX = e.clientX - graphOffsetX;
+                dragStartY = e.clientY - graphOffsetY;
+                graphContainer.classList.add('grabbing');
+            }
+        });
+
+        graphContainer.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                graphOffsetX = e.clientX - dragStartX;
+                graphOffsetY = e.clientY - dragStartY;
+                renderGraph();
+            }
+        });
+
+        graphContainer.addEventListener('mouseup', () => {
+            isDragging = false;
+            graphContainer.classList.remove('grabbing');
+        });
+
+        graphContainer.addEventListener('mouseleave', () => {
+            isDragging = false;
+            graphContainer.classList.remove('grabbing');
+        });
+
+        graphContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            const newScale = Math.max(0.2, Math.min(2, graphScale * delta));
+            
+            // Zoom towards cursor
+            const rect = graphContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            graphOffsetX = mouseX - (mouseX - graphOffsetX) * (newScale / graphScale);
+            graphOffsetY = mouseY - (mouseY - graphOffsetY) * (newScale / graphScale);
+            
+            graphScale = newScale;
+            renderGraph();
+        });
+
+        function zoomIn() {
+            graphScale = Math.min(2, graphScale * 1.2);
+            renderGraph();
+        }
+
+        function zoomOut() {
+            graphScale = Math.max(0.2, graphScale * 0.8);
+            renderGraph();
+        }
+
+        function resetView() {
+            graphScale = 1;
+            graphOffsetX = 0;
+            graphOffsetY = 0;
+            renderGraph();
+        }
+
+        function fitToScreen() {
+            if (graphNodes.length === 0) return;
+            
+            const container = document.getElementById('graph-container');
+            const padding = 50;
+            
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            graphNodes.forEach(node => {
+                if (isNodeVisible(node)) {
+                    minX = Math.min(minX, node.x);
+                    maxX = Math.max(maxX, node.x + node.width);
+                    minY = Math.min(minY, node.y);
+                    maxY = Math.max(maxY, node.y + node.height);
+                }
+            });
+            
+            const graphWidth = maxX - minX + padding * 2;
+            const graphHeight = maxY - minY + padding * 2;
+            
+            const scaleX = container.clientWidth / graphWidth;
+            const scaleY = container.clientHeight / graphHeight;
+            graphScale = Math.min(scaleX, scaleY, 1);
+            
+            graphOffsetX = (container.clientWidth - graphWidth * graphScale) / 2 - minX * graphScale + padding * graphScale;
+            graphOffsetY = (container.clientHeight - graphHeight * graphScale) / 2 - minY * graphScale + padding * graphScale;
+            
+            renderGraph();
+        }
+
+        function expandAll() {
+            collapsedGraphNodes.clear();
+            renderGraph();
+        }
+
+        function collapseAll() {
+            allTasks.forEach(task => {
+                if (task.children.length > 0) {
+                    collapsedGraphNodes.add(task.id);
+                }
+            });
+            renderGraph();
+        }
+
+        function updateMinimap() {
+            const minimap = document.getElementById('minimap');
+            const canvas = document.getElementById('minimap-canvas');
+            const viewport = document.getElementById('minimap-viewport');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = minimap.clientWidth;
+            canvas.height = minimap.clientHeight;
+            
+            if (graphNodes.length === 0) return;
+            
+            // Calculate bounds
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            graphNodes.forEach(node => {
+                minX = Math.min(minX, node.x);
+                maxX = Math.max(maxX, node.x + node.width);
+                minY = Math.min(minY, node.y);
+                maxY = Math.max(maxY, node.y + node.height);
+            });
+            
+            const graphWidth = maxX - minX + 100;
+            const graphHeight = maxY - minY + 100;
+            
+            const scale = Math.min(canvas.width / graphWidth, canvas.height / graphHeight) * 0.9;
+            const offsetX = (canvas.width - graphWidth * scale) / 2 - minX * scale;
+            const offsetY = (canvas.height - graphHeight * scale) / 2 - minY * scale;
+            
+            // Draw nodes
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            graphNodes.forEach(node => {
+                if (!isNodeVisible(node)) return;
+                
+                ctx.fillStyle = getStatusColor(node.task.status);
+                ctx.fillRect(
+                    node.x * scale + offsetX,
+                    node.y * scale + offsetY,
+                    node.width * scale,
+                    node.height * scale
+                );
+            });
+            
+            // Draw viewport
+            const container = document.getElementById('graph-container');
+            const viewportWidth = (container.clientWidth / graphScale) * scale;
+            const viewportHeight = (container.clientHeight / graphScale) * scale;
+            const viewportX = (-graphOffsetX / graphScale) * scale + offsetX;
+            const viewportY = (-graphOffsetY / graphScale) * scale + offsetY;
+            
+            viewport.style.left = `${viewportX}px`;
+            viewport.style.top = `${viewportY}px`;
+            viewport.style.width = `${viewportWidth}px`;
+            viewport.style.height = `${viewportHeight}px`;
+        }
+
+        // ==================== Timeline View ====================
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '';
+
+            if (!workflowData || allTasks.length === 0) return;
+
+            // Calculate time bounds
+            let minTime = Infinity, maxTime = -Infinity;
+            allTasks.forEach(task => {
+                if (task.startTime) minTime = Math.min(minTime, task.startTime.getTime());
+                if (task.endTime) maxTime = Math.max(maxTime, task.endTime.getTime());
+            });
+
+            if (minTime === Infinity) return;
+
+            const totalDuration = maxTime - minTime;
+            document.getElementById('timelineInfo').textContent = 
+                `Total Duration: ${formatDuration(totalDuration)} | ${allTasks.length} tasks`;
+
+            // Create scale
+            const scale = document.createElement('div');
+            scale.className = 'timeline-scale';
+            scale.innerHTML = `
+                <div class="timeline-scale-label">Time</div>
+                <div class="timeline-scale-marks" id="timeline-scale-marks"></div>
+            `;
+            container.appendChild(scale);
+
+            const scaleMarks = scale.querySelector('#timeline-scale-marks');
+            const numMarks = 6;
+            for (let i = 0; i <= numMarks; i++) {
+                const time = new Date(minTime + (totalDuration * i / numMarks));
+                const mark = document.createElement('div');
+                mark.className = 'timeline-scale-mark';
+                mark.textContent = formatTime(time);
+                scaleMarks.appendChild(mark);
+            }
+
+            // Create gantt rows
+            const flatTasks = [];
+            function flattenTasks(tasks, depth = 0) {
+                tasks.forEach(task => {
+                    flatTasks.push({ task, depth });
+                    if (task.children.length > 0) {
+                        flattenTasks(task.children, depth + 1);
+                    }
+                });
+            }
+            flattenTasks(allTasks.filter(t => t.parent === null));
+
+            flatTasks.forEach(({ task, depth }) => {
+                const row = document.createElement('div');
+                row.className = 'gantt-row';
+                row.style.paddingLeft = `${depth * 16}px`;
+
+                const label = document.createElement('div');
+                label.className = 'gantt-label';
+                label.innerHTML = `
+                    <div class="status-indicator status-${task.status}"></div>
+                    <span title="${task.name}">${truncate(task.name, 35)}</span>
+                `;
+                label.onclick = () => {
+                    document.querySelector('.tab-btn[data-tab="tree"]').click();
+                    setTimeout(() => {
+                        expandToTask(task.id);
+                        selectTask(task.id);
+                    }, 100);
+                };
+                label.style.cursor = 'pointer';
+
+                const barContainer = document.createElement('div');
+                barContainer.className = 'gantt-bar-container';
+
+                if (task.startTime) {
+                    const bar = document.createElement('div');
+                    bar.className = `gantt-bar ${task.status}`;
+
+                    const startOffset = ((task.startTime.getTime() - minTime) / totalDuration) * 100;
+                    const endTime = task.endTime || new Date();
+                    const duration = ((endTime.getTime() - task.startTime.getTime()) / totalDuration) * 100;
+
+                    bar.style.left = `${startOffset}%`;
+                    bar.style.width = `${Math.max(duration, 0.5)}%`;
+
+                    const durationText = task.endTime ? formatDuration(task.endTime - task.startTime) : 'Running...';
+                    if (duration > 5) {
+                        bar.textContent = durationText;
+                    }
+
+                    bar.onmouseenter = (e) => showGanttTooltip(e, task);
+                    bar.onmouseleave = hideGanttTooltip;
+                    bar.onmousemove = (e) => moveGanttTooltip(e);
+
+                    barContainer.appendChild(bar);
+                }
+
+                row.appendChild(label);
+                row.appendChild(barContainer);
+                container.appendChild(row);
+            });
+        }
+
+        function showGanttTooltip(e, task) {
+            const tooltip = document.getElementById('ganttTooltip');
+            const duration = task.startTime && task.endTime
+                ? formatDuration(task.endTime - task.startTime)
+                : 'Running...';
+
+            tooltip.innerHTML = `
+                <div class="gantt-tooltip-title">${task.name}</div>
+                <div class="gantt-tooltip-row">
+                    <span class="gantt-tooltip-label">Type:</span>
+                    <span class="gantt-tooltip-value">${task.type}</span>
+                </div>
+                <div class="gantt-tooltip-row">
+                    <span class="gantt-tooltip-label">Status:</span>
+                    <span class="gantt-tooltip-value">${task.status}</span>
+                </div>
+                <div class="gantt-tooltip-row">
+                    <span class="gantt-tooltip-label">Duration:</span>
+                    <span class="gantt-tooltip-value">${duration}</span>
+                </div>
+                <div class="gantt-tooltip-row">
+                    <span class="gantt-tooltip-label">Start:</span>
+                    <span class="gantt-tooltip-value">${formatDateTime(task.startTime)}</span>
+                </div>
+                ${task.endTime ? `
+                <div class="gantt-tooltip-row">
+                    <span class="gantt-tooltip-label">End:</span>
+                    <span class="gantt-tooltip-value">${formatDateTime(task.endTime)}</span>
+                </div>
+                ` : ''}
+            `;
+            tooltip.style.display = 'block';
+            moveGanttTooltip(e);
+        }
+
+        function moveGanttTooltip(e) {
+            const tooltip = document.getElementById('ganttTooltip');
+            tooltip.style.left = `${e.clientX + 15}px`;
+            tooltip.style.top = `${e.clientY + 15}px`;
+        }
+
+        function hideGanttTooltip() {
+            document.getElementById('ganttTooltip').style.display = 'none';
+        }
+
+        // ==================== Utilities ====================
+        function formatDuration(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+
+            if (hours > 0) {
+                return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds % 60}s`;
+            } else if (seconds > 0) {
+                return `${seconds}s`;
+            } else {
+                return `${ms}ms`;
+            }
+        }
+
+        function formatDateTime(date) {
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function truncate(str, length) {
+            return str.length > length ? str.substring(0, length) + '...' : str;
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                COMPLETED: '#10b981',
+                FAILED: '#ef4444',
+                RUNNING: '#f59e0b',
+                SCHEDULED: '#06b6d4',
+                CANCELED: '#f97316',
+                SKIPPED: '#9ca3af'
+            };
+            return colors[status] || '#9ca3af';
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            if (document.getElementById('graph-panel').classList.contains('active')) {
+                renderGraph();
+            }
+        });
     </script>
 </body>
 </html>
